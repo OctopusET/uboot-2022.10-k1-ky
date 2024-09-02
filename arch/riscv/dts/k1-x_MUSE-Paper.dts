@@ -13,6 +13,8 @@
 	aliases {
 		efuse_power = &ldo_31;
 		battery = &cw2015;
+		charger = &sgm41515;
+		charger-2 = &secsgm41515;
 	};
 
 	memory@0 {
@@ -36,7 +38,6 @@
 		vbus-gpios = <&gpio 79 0>;	/* gpio_79 for usb3 pwren */
 		status = "disabled";
 	};
-
 };
 
 &cpus {
@@ -105,11 +106,38 @@
 };
 
 &i2c6 {
-	status = "disabled";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c6_0>;
+	status = "okay";
+	secsgm41515: sgm41515-2 {
+		compatible = "spacemit,sgm41515";
+		reg = <0x1a>;
+		ch-en-gpios = <&gpio 46 0>;
+		nqon-gpios = <&gpio 43 0>;
+
+		sgm41515-ichrg-uA = <1000000>;
+		sgm41515-vchrg-uV = <4350000>;
+		sgm41515-cur-input-uA = <2000000>;
+		status = "okay";
+	};
 };
 
 &i2c7 {
 	status = "disabled";
+};
+
+&i2c8 {
+	sgm41515: sgm41515 {
+		compatible = "spacemit,sgm41515";
+		reg = <0x1a>;
+		ch-en-gpios = <&gpio 117 0>;
+		nqon-gpios = <&gpio 115 0>;
+
+		sgm41515-ichrg-uA = <1000000>;
+		sgm41515-vchrg-uV = <4350000>;
+		sgm41515-cur-input-uA = <2000000>;
+		status = "okay";
+	};
 };
 
 &pinctrl {

@@ -163,6 +163,24 @@
 				algo = "crc32";
 			};
 		};
+		fdt_17 {
+			description = "k1-x_baton-camera";
+			type = "flat_dt";
+			compression = "none";
+			data = /incbin/("../dtb/k1-x_baton-camera.dtb");
+			hash-1 {
+				algo = "crc32";
+			};
+		};
+		fdt_18 {
+			description = "k1-x_FusionOne";
+			type = "flat_dt";
+			compression = "none";
+			data = /incbin/("../dtb/k1-x_FusionOne.dtb");
+			hash-1 {
+				algo = "crc32";
+			};
+		};
 	};
 
 	configurations {
@@ -246,6 +264,16 @@
 			description = "k1-x_MUSE-Paper-mini-4g";
 			loadables = "uboot";
 			fdt = "fdt_16";
+		};
+		conf_17 {
+			description = "k1-x_baton-camera";
+			loadables = "uboot";
+			fdt = "fdt_17";
+		};
+		conf_18 {
+			description = "k1-x_FusionOne";
+			loadables = "uboot";
+			fdt = "fdt_18";
 		};
 	};
 };

@@ -271,6 +271,12 @@ static struct dfc_level_config freq_levels[MAX_FREQ_LV] =
 	{7, 3, DPLL_PLL2, DPLL_DIV1, DPLL_DIV1, 3200, 1, 3},
 };
 
+#define KHZ			1000
+#define FREQ_MAX		~(0U)
+static int ddr_vmin_table[] = {
+	0,     400000,    600000,    FREQ_MAX
+};
+
 
 static int get_cur_freq_level(void)
 {
@@ -385,6 +391,25 @@ static int ddr_vftbl_cfg(void)
 	return 0;
 }
 
+static void set_vol_level(void)
+{
+	int freq_lv, vmin_lv, cur_vol_lv = 0;
+	u32 rate;
+
+	for (freq_lv = 0; freq_lv < MAX_FREQ_LV; freq_lv++) {
+		rate = freq_levels[freq_lv].data_rate / DDR_CONS * KHZ;
+		for (vmin_lv = cur_vol_lv; vmin_lv < ARRAY_SIZE(ddr_vmin_table); vmin_lv++) {
+			if (rate <= ddr_vmin_table[vmin_lv]) {
+				freq_levels[freq_lv].vol_lv = vmin_lv;
+				cur_vol_lv = vmin_lv;
+				break;
+			}
+		}
+		pr_info("%d KHZ: %d; ", rate, vmin_lv);
+	}
+	pr_info("\n");
+}
+
 static int config_core(void)
 {
 	u32 val;
@@ -489,19 +514,20 @@ static int wait_freq_change_done(void)
 static int ddr_freq_init(void)
 {
 	int ret;
-	static bool ddr_freq_init_flag = false;	
+	static bool ddr_freq_init_flag = false;
 
 	if(ddr_freq_init_flag == true) {
 		return 0;
 	}
 
-	#ifdef CONFIG_K1_X_BOARD_ASIC
+#ifdef CONFIG_K1_X_BOARD_ASIC
+	set_vol_level();
 	ret = ddr_vftbl_cfg();
 	if (ret < 0) {
 		pr_err("%s failed!\n", __func__);
 		return ret;
 	}
-	#endif
+#endif
 
 	ddr_freq_init_flag = true;
 

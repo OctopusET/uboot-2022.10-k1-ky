@@ -304,7 +304,7 @@ int _parse_flash_config(struct flash_dev *fdev, void *load_flash_addr)
 			if (!parse_mtd_partition){
 				if (strlen(node_part) > 0 && !strncmp("bootinfo", node_part, 8)){
 					pr_info("bootinfo would not add as partition\n");
-					fdev->parts_info[part_index].hidden = true;
+					continue;
 				}
 			}
 
@@ -818,7 +818,7 @@ int compare_mtd_image_val(struct mtd_info *mtd, u64 compare_val, uint64_t image_
  * @param response
  * @param fdev
  */
-void fastboot_oem_flash_bootinfo(const char *cmd, void *download_buffer, 
+void fastboot_oem_flash_bootinfo(const char *cmd, void *download_buffer,
 		u32 download_bytes, char *response, struct flash_dev *fdev)
 {
 #if CONFIG_IS_ENABLED(FASTBOOT_FLASH_MMC) || CONFIG_IS_ENABLED(FASTBOOT_MULTI_FLASH_OPTION_MMC)

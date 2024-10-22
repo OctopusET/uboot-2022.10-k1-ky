@@ -664,4 +664,15 @@ config SPL_SPACEMIT_K1X_EFUSE
 	help
 	  This enable efuse read support in SPL, on Spacemit K1x SoCs.
 
+config SPACEMIT_SHUTDOWN_CHARGE
+	bool "Support charge battery in shutdown mode for k1x soc"
+	depends on MISC
+	help
+	  This enable the charge battery in system shutdown mode, on Spacemit K1x SoCs.
+
+config SPL_SPACEMIT_SHUTDOWN_CHARGE
+	bool "Support charge battery in shutdown mode for k1x soc in spl"
+	depends on MISC
+	help
+	  This enable the charge battery in system shutdown mode, on Spacemit K1x SoCs, in spl.
 endmenu

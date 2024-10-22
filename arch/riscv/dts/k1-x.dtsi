@@ -857,6 +857,10 @@
 			};
 		};
 
+		shutdown_charging: charging {
+			compatible = "k1,shutdown-charging";
+			status = "disabled";
+		};
 	};
 
 	binman: binman {

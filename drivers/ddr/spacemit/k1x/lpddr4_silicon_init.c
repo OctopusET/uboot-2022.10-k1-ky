@@ -22,6 +22,7 @@
 #include <mapmem.h>
 #include <u-boot/crc.h>
 #include "ddr_freq.h"
+#include <linux/delay.h>
 
 #define BOOT_PP		0
 #define PMUA_REG_BASE	0xd4282800
@@ -44,7 +45,7 @@ extern u32 ddr_cs_num;
 extern u32 ddr_get_mr8(void);
 extern uint32_t get_manufacture_id(void);
 extern uint32_t get_ddr_rev_id(void);
-
+static uint32_t byte_mode_tag = 0;
 struct addrmap_info {
 	u32 io_width_per_channel;
 	u32 density_per_channel;
@@ -88,7 +89,7 @@ struct io_para_info {
 };
 
 const struct io_para_info ddr_io_para_table[] = {
-	{SK_HYNIX, LPDDR4X, 0x9D, R_40, R_40, R_60, 0x19, R_60, VOH_0P6, R_60, R_60, 0x55},
+	{SK_HYNIX, LPDDR4X, 0x9D, R_40, R_40, R_80, 0x19, R_60, VOH_0P6, R_60, R_60, 0x55},
 	{SK_HYNIX, LPDDR4, 0xB2, R_40, R_40, R_120, 0xA7, R_60, VOH_0P6, R_80, R_80, 0x33},
 	// {SK_HYNIX, LPDDR4, 0xB2, R_40, R_40, R_60, 0xA7, R_48, VOH_0P6, R_48, R_48, 0x00},
 };
@@ -779,6 +780,25 @@ void ddr_dfc_table_init(unsigned int DDRC_BASE, unsigned int ddr_size_mb)
 	REG32(DDRC_BASE + 0x70) = idx;
 }
 
+void set_byte_mode_parameter(u32 DDRC_BASE)
+{
+	REG32(DDRC_BASE + MC_CH0_BASE + 0x0104) = 0xF0800400;
+	REG32(DDRC_BASE + MC_CH0_PHY_BASE + 0x03e4) = 0x19000A02;
+	REG32(DDRC_BASE + MC_CH0_BASE + 0x01b4) = 0x08001400;
+
+	REG32(DDRC_BASE + MC_CH0_BASE + 0x0104) = 0xA0800400;
+	REG32(DDRC_BASE + MC_CH0_PHY_BASE + 0x03e4) = 0x15000802;
+	REG32(DDRC_BASE + MC_CH0_BASE + 0x01b4) = 0x08001000;
+
+	REG32(DDRC_BASE + MC_CH0_BASE + 0x0104) = 0x50800400;
+	REG32(DDRC_BASE + MC_CH0_PHY_BASE + 0x03e4) = 0x0c000402;
+	REG32(DDRC_BASE + MC_CH0_BASE + 0x01b4) = 0x08000A00;
+
+	REG32(DDRC_BASE + MC_CH0_BASE + 0x0104) = 0x00800400;
+	REG32(DDRC_BASE + MC_CH0_PHY_BASE + 0x03e4) = 0x0c000402;
+	REG32(DDRC_BASE + MC_CH0_BASE + 0x01b4) = 0x08000A00;
+}
+
 void top_DDR_MC_init(unsigned DDRC_BASE, unsigned int fp)
 {
 	u32 temp_data;
@@ -810,7 +830,12 @@ void top_DDR_MC_init(unsigned DDRC_BASE, unsigned int fp)
 
 	REG32(DDRC_BASE + MC_CH0_BASE + 0xcc) = 0x200;
 	fp_timing_init(DDRC_BASE);
+
+	if(byte_mode_tag)
+		set_byte_mode_parameter(DDRC_BASE);
+
 	fp_sel(DDRC_BASE, fp);
+
 	REG32(DDRC_BASE + MC_CH0_BASE + 0x0180) = 0x30D400;
 	REG32(DDRC_BASE + MC_CH0_BASE + 0x0184) = 0x4E200;
 	REG32(DDRC_BASE + MC_CH0_BASE + 0x0188) = 0xC800000;
@@ -857,7 +882,7 @@ void top_DDR_rx_ds_odt_vref(unsigned DPHY0_BASE,unsigned combination)
 	case 2:
 		data = REG32(DPHY0_BASE + COMMON_OFFSET + 0xc);
 		data &= 0xFFC0FFFF;
-			// d_reg3 = 0xE4;
+		//d_reg3 = 0xE4;
 		d_reg3 = (io_para_update->rx_odt << 3) | io_para_update->rx_odt;
 		data |= (d_reg3 << 16);
 		REG32(DPHY0_BASE + COMMON_OFFSET + 0xc) = data;
@@ -1217,8 +1242,22 @@ void lpddr4_silicon_init(u32 ddr_base, const char *ddr_type, u32 data_rate)
 
 	top_DDR_MC_Phy_Device_Init(ddr_base, cs_num, 0);
 
+	top_training_fp_all(ddr_base, cs_num, 0, info->para);
+
 	size_mb = ddr_get_density();
 	mr8_value = ddr_get_mr8();
+	byte_mode_tag = (mr8_value >> 6);
+
+	if (0 != byte_mode_tag) {
+		//reset mc
+		REG32(0xd4282800 + 0xb0) &= ~(0x1 << 21);
+		udelay(100);
+		REG32(0xd4282800 + 0xb0) |= (0x1 << 21);
+		udelay(100);
+
+		top_DDR_MC_Phy_Device_Init(ddr_base, cs_num, 0);
+	}
+
 	adjust_mapping(ddr_base, cs_num, size_mb, mr8_value);
 	LogMsg(0,"ddr density: %u MB \n", size_mb);
 

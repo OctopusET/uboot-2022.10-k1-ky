@@ -16,6 +16,7 @@
 #ifndef HOST_XHCI_H_
 #define HOST_XHCI_H_
 
+#include <iommu.h>
 #include <phys2bus.h>
 #include <asm/types.h>
 #include <asm/cache.h>
@@ -25,6 +26,13 @@
 
 #define MAX_EP_CTX_NUM		31
 #define XHCI_ALIGNMENT		64
+
+/* Non-blocking INTR transfer timeout
+ * Keyboard idle timeout is 40ms, double it to make sure key is captured,
+ * meanwhile prevent misbehaved keyboard block too long
+ */
+#define XHCI_NONBLOCK_INTR_TIMEOUT		80
+
 /* Generic timeout for XHCI events */
 #define XHCI_TIMEOUT		5000
 /* Max number of USB devices for any host controller - limit in section 6.1 */
@@ -490,6 +498,7 @@ struct xhci_container_ctx {
 
 	int size;
 	u8 *bytes;
+	dma_addr_t dma;
 };
 
 /**
@@ -688,6 +697,8 @@ struct xhci_input_control_ctx {
 struct xhci_device_context_array {
 	/* 64-bit device addresses; we only write 32-bit addresses */
 	__le64			dev_context_ptrs[MAX_HC_SLOTS];
+	/* private xHCD pointers */
+	dma_addr_t	dma;
 };
 /* TODO: write function to set the 64-bit device DMA address */
 /*
@@ -870,6 +881,9 @@ struct xhci_event_cmd {
 /* Block Event Interrupt */
 #define	TRB_BEI			(1<<9)
 
+/* Address device - disable SetAddress */
+#define	TRB_BSR			(1<<9)
+
 /* Control transfer TRB specific fields */
 #define TRB_DIR_IN		(1<<16)
 #define	TRB_TX_TYPE(p)		((p) << 16)
@@ -897,6 +911,8 @@ union xhci_trb {
 
 /* TRB type IDs */
 typedef enum {
+	/* reserved, used as a software sentinel */
+	TRB_NONE = 0,
 	/* bulk, interrupt, isoc scatter/gather, and control data stage */
 	TRB_NORMAL = 1,
 	/* setup stage for control transfers */
@@ -997,6 +1013,7 @@ struct xhci_segment {
 	union xhci_trb		*trbs;
 	/* private to HCD */
 	struct xhci_segment	*next;
+	dma_addr_t		dma;
 };
 
 struct xhci_ring {
@@ -1025,11 +1042,14 @@ struct xhci_erst_entry {
 struct xhci_erst {
 	struct xhci_erst_entry	*entries;
 	unsigned int		num_entries;
+	/* xhci->event_ring keeps track of segment dma addresses */
+	dma_addr_t		erst_dma_addr;
 	/* Num entries the ERST can contain */
 	unsigned int		erst_size;
 };
 
 struct xhci_scratchpad {
+	void *scratchpad;
 	u64 *sp_array;
 };
 
@@ -1216,6 +1236,7 @@ struct xhci_ctrl {
 	struct xhci_virt_device *devs[MAX_HC_SLOTS];
 	int rootdev;
 	u16 hci_version;
+	int page_size;
 	u32 quirks;
 #define XHCI_MTK_HOST		BIT(0)
 };
@@ -1226,7 +1247,7 @@ struct xhci_ctrl {
 #define xhci_to_dev(_ctrl)	NULL
 #endif
 
-unsigned long trb_addr(struct xhci_segment *seg, union xhci_trb *trb);
+dma_addr_t xhci_trb_virt_to_dma(struct xhci_segment *seg, union xhci_trb *trb);
 struct xhci_input_control_ctx
 		*xhci_get_input_control_ctx(struct xhci_container_ctx *ctx);
 struct xhci_slot_ctx *xhci_get_slot_ctx(struct xhci_ctrl *ctrl,
@@ -1243,12 +1264,18 @@ void xhci_slot_copy(struct xhci_ctrl *ctrl,
 		    struct xhci_container_ctx *out_ctx);
 void xhci_setup_addressable_virt_dev(struct xhci_ctrl *ctrl,
 				     struct usb_device *udev, int hop_portnr);
-void xhci_queue_command(struct xhci_ctrl *ctrl, u8 *ptr,
+void xhci_queue_command(struct xhci_ctrl *ctrl, dma_addr_t addr,
 			u32 slot_id, u32 ep_index, trb_type cmd);
+void xhci_queue_command_extra_flags(struct xhci_ctrl *ctrl, dma_addr_t addr,
+			u32 slot_id, u32 ep_index, trb_type cmd, u32 extra_flags);
 void xhci_acknowledge_event(struct xhci_ctrl *ctrl);
 union xhci_trb *xhci_wait_for_event(struct xhci_ctrl *ctrl, trb_type expected);
+union xhci_trb *xhci_wait_for_event_timeout(struct xhci_ctrl *ctrl, trb_type expected,
+		  unsigned long timeout);
 int xhci_bulk_tx(struct usb_device *udev, unsigned long pipe,
 		 int length, void *buffer);
+int xhci_intr_tx(struct usb_device *udev, unsigned long pipe,
+		 int length, void *buffer, bool nonblock);
 int xhci_ctrl_tx(struct usb_device *udev, unsigned long pipe,
 		 struct devrequest *req, int length, void *buffer);
 int xhci_check_maxpacket(struct usb_device *udev);
@@ -1258,6 +1285,8 @@ void xhci_cleanup(struct xhci_ctrl *ctrl);
 struct xhci_ring *xhci_ring_alloc(struct xhci_ctrl *ctrl, unsigned int num_segs,
 				  bool link_trbs);
 int xhci_alloc_virt_device(struct xhci_ctrl *ctrl, unsigned int slot_id);
+void xhci_copy_ep0_dequeue_into_input_ctx(struct xhci_ctrl *ctrl,
+		  struct usb_device *udev);
 int xhci_mem_init(struct xhci_ctrl *ctrl, struct xhci_hccr *hccr,
 		  struct xhci_hcor *hcor);
 
@@ -1284,14 +1313,22 @@ extern struct dm_usb_ops xhci_usb_ops;
 
 struct xhci_ctrl *xhci_get_ctrl(struct usb_device *udev);
 
-static inline dma_addr_t xhci_virt_to_bus(struct xhci_ctrl *ctrl, void *addr)
+static inline dma_addr_t xhci_dma_map(struct xhci_ctrl *ctrl, void *addr,
+				      size_t size)
 {
+#if CONFIG_IS_ENABLED(IOMMU)
+	return dev_iommu_dma_map(xhci_to_dev(ctrl), addr, size);
+#else
 	return dev_phys_to_bus(xhci_to_dev(ctrl), virt_to_phys(addr));
+#endif
 }
 
-static inline void *xhci_bus_to_virt(struct xhci_ctrl *ctrl, dma_addr_t addr)
+static inline void xhci_dma_unmap(struct xhci_ctrl *ctrl, dma_addr_t addr,
+				  size_t size)
 {
-	return phys_to_virt(dev_bus_to_phys(xhci_to_dev(ctrl), addr));
+#if CONFIG_IS_ENABLED(IOMMU)
+	dev_iommu_dma_unmap(xhci_to_dev(ctrl), addr, size);
+#endif
 }
 
 #endif /* HOST_XHCI_H_ */

@@ -20,6 +20,7 @@ struct pmic_wdt_priv {
 	fdt_addr_t base;
 	fdt_addr_t pwr_ctrl0;
 	fdt_addr_t pwr_ctrl2;
+	fdt_addr_t alive_reg;
 	enum pmic_model model;
 };
 
@@ -199,6 +200,14 @@ static int pmic_wdt_expire_now(struct udevice *dev, ulong flags)
 
 	switch (priv->model) {
 	case PMIC_MODEL_SPM8821:
+
+		/* set the reset flag for shutdown charging or not */
+		ret = pmic_reg_read(priv->pmic_dev, priv->alive_reg);
+		if (ret < 0) return ret;
+		reg_val = ret | (1 << SYS_REBOOT_FLAG_BIT);
+		ret = pmic_reg_write(priv->pmic_dev, priv->alive_reg, reg_val);
+		if (ret) return ret;
+
 		/* Set SW_RST bit of PWR_CTRL2 */
 		ret = pmic_reg_read(priv->pmic_dev, priv->pwr_ctrl2);
 		if (ret < 0) return ret;
@@ -234,6 +243,7 @@ static int pmic_wdt_probe(struct udevice *dev)
 		priv->base = SPM8821_WDT_CTRL;
 		priv->pwr_ctrl0 = SPM8821_PWR_CTRL0;
 		priv->pwr_ctrl2 = SPM8821_PWR_CTRL2;
+		priv->alive_reg = SPM8821_ALIVE_REGISTER;
 	} else {
 		priv->model = PMIC_MODEL_UNKNOWN;
 		pr_err("Device is not compatible: %s\n", wdt_name);

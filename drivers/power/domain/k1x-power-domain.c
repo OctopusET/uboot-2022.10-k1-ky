@@ -12,6 +12,20 @@
 #define APMU_REGMAP_INDEX       1
 
 #define APMU_POWER_STATUS_REG   0xf0
+#define MPMU_APCR_PER_REG	0x1098
+#define MPMU_AWUCRM_REG         0x104c
+
+#define PM_QOS_AXISDD_OFFSET    31
+#define PM_QOS_DDRCORSD_OFFSET  27
+#define PM_QOS_APBSD_OFFSET     26
+#define PM_QOS_VCTCXOSD_OFFSET  19
+#define PM_QOS_STBYEN_OFFSET    13
+#define PM_QOS_PE_VOTE_AP_SLPEN_OFFSET  3
+
+/* pmic */
+#define WAKEUP_SOURCE_WAKEUP_7  7
+
+static unsigned int g_acpr_per;
 
 enum pm_domain_id {
 	K1X_PMU_VPU_PWR_DOMAIN,
@@ -21,6 +35,7 @@ enum pm_domain_id {
 	K1X_PMU_AUD_PWR_DOMAIN,
 	K1X_PMU_GNSS_PWR_DOMAIN,
 	K1X_PMU_HDMI_PWR_DOMAIN,
+	K1X_PMU_WKUP_EVENT_PWR_DOMAIN,
 };
 
 struct pm_domain_desc {
@@ -131,6 +146,10 @@ static struct pm_domain_desc k1x_pm_domain_desc[] = {
 		.use_hw = 1,
 		.pm_index = K1X_PMU_HDMI_PWR_DOMAIN,
 	},
+
+	[K1X_PMU_WKUP_EVENT_PWR_DOMAIN] = {
+		.pm_index = K1X_PMU_WKUP_EVENT_PWR_DOMAIN,
+	},
 };
 
 static const struct udevice_id spacemit_power_domain_of_match[] = {
@@ -159,6 +178,17 @@ static int k1x_pd_power_off(struct spacemit_k1x_pd_platdata *skp, struct pm_doma
 {
 	unsigned int val;
 	int loop;
+        unsigned int apcr_per;
+
+	if (desc->pm_index == K1X_PMU_WKUP_EVENT_PWR_DOMAIN) {
+		regmap_write(skp->regmap[MPMU_REGMAP_INDEX], MPMU_APCR_PER_REG, g_acpr_per);
+
+		/* disable pmic wakeup */
+		regmap_read(skp->regmap[MPMU_REGMAP_INDEX], MPMU_AWUCRM_REG, &apcr_per);
+		apcr_per &= ~(1 << WAKEUP_SOURCE_WAKEUP_7);
+		regmap_write(skp->regmap[MPMU_REGMAP_INDEX], MPMU_AWUCRM_REG, apcr_per);
+		return 0;
+	}
 
 	if (!desc->use_hw) {
 		/* this is the sw type */
@@ -210,6 +240,29 @@ static int k1x_pd_power_on(struct spacemit_k1x_pd_platdata *skp, struct pm_domai
 {
 	int loop;
 	unsigned int val;
+	unsigned int apcr_per;
+	unsigned int apcr_clear = 0, apcr_set = (1 << PM_QOS_PE_VOTE_AP_SLPEN_OFFSET);
+
+	if (desc->pm_index == K1X_PMU_WKUP_EVENT_PWR_DOMAIN) {
+		/* vote the per, and enable some wakeup source */
+		apcr_set |= (1 << PM_QOS_AXISDD_OFFSET);
+		apcr_set |= (1 << PM_QOS_DDRCORSD_OFFSET);
+		apcr_set |= (1 << PM_QOS_APBSD_OFFSET);
+		apcr_set |= (1 << PM_QOS_VCTCXOSD_OFFSET);
+		apcr_set |= (1 << PM_QOS_STBYEN_OFFSET);
+
+		regmap_read(skp->regmap[MPMU_REGMAP_INDEX], MPMU_APCR_PER_REG, &apcr_per);
+		g_acpr_per = apcr_per;
+		apcr_per &= ~(apcr_clear);
+		apcr_per |= apcr_set;
+		regmap_write(skp->regmap[MPMU_REGMAP_INDEX], MPMU_APCR_PER_REG, apcr_per);
+
+		/* enable pmic wakeup */
+		regmap_read(skp->regmap[MPMU_REGMAP_INDEX], MPMU_AWUCRM_REG, &apcr_per);
+		apcr_per |= (1 << WAKEUP_SOURCE_WAKEUP_7);
+		regmap_write(skp->regmap[MPMU_REGMAP_INDEX], MPMU_AWUCRM_REG, apcr_per);
+		return 0;
+	}
 
 	regmap_read(skp->regmap[APMU_REGMAP_INDEX], APMU_POWER_STATUS_REG, &val);
 	if (val & (1 << desc->bit_pwr_stat))

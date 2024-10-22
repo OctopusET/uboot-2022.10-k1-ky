@@ -23,6 +23,13 @@
 		bootargs = "earlycon=sbi console=ttyS0,115200 debug loglevel=8,initcall_debug=1 rdinit=/init.tmp";
 		stdout-path = "serial0:115200n8";
 	};
+
+	usb3hub: usb3hub {
+		compatible = "spacemit,usb-hub";
+		vbus-gpios = <&gpio 123 0>;
+		status = "okay";
+	};
+
 };
 
 &cpus {
@@ -127,8 +134,34 @@
 	status = "okay";
 };
 
+&usbphy1 {
+	status = "okay";
+};
+
+&ehci1 {
+	status = "okay";
+};
+
 &usb2phy {
 	status = "okay";
+};
+
+&combphy {
+	status = "okay";
+};
+
+&usbdrd3 {
+	status = "okay";
+	vbus-supply = <&usb3hub>;
+	dwc3@c0a00000 {
+		dr_mode = "host";
+		phy_type = "utmi";
+		snps,dis_enblslpm_quirk;
+		snps,dis_u2_susphy_quirk;
+		snps,dis_u3_susphy_quirk;
+		snps,dis-del-phy-power-chg-quirk;
+		snps,dis-tx-ipgap-linecheck-quirk;
+	};
 };
 
 &sdhci0 {

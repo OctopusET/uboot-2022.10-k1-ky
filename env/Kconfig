@@ -272,6 +272,13 @@ config ENV_IS_IN_NAND
 	  Currently, CONFIG_ENV_OFFSET_REDUND is not supported when
 	  using CONFIG_ENV_OFFSET_OOB.
 
+config ENV_IS_IN_NFS
+	bool "Environment is in NFS"
+	depends on NET
+	help
+	  This option allows loading the environment from an NFS server
+	  when local bootfs is not available.
+
 config ENV_RANGE
 	hex "Length of the region in which the environment can be written"
 	depends on ENV_IS_IN_NAND

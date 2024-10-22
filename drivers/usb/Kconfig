@@ -127,6 +127,12 @@ config SYS_USB_EVENT_POLL
 config SYS_USB_EVENT_POLL_VIA_INT_QUEUE
     bool "Poll via interrupt queue"
 
+config SYS_USB_EVENT_POLL_COMPATIBLE
+	bool "Interrupt polling compatible mode"
+	---help---
+	  Select to poll via interrupt queue if controller supported,
+	  this allow using different mechanisms for different controllers.
+
 config SYS_USB_EVENT_POLL_VIA_CONTROL_EP
     bool "Poll via control EP"
 

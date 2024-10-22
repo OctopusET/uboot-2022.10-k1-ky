@@ -56,26 +56,33 @@ int set_nor_splash_location(struct splash_location *locations) {
 	char *blk_name;
 	char devpart_str[16];
 
-	if (get_available_boot_blk_dev(&blk_name, &blk_index)){
-		printf("can not get available blk dev\n");
+	if (get_available_boot_blk_dev(&blk_name, &blk_index)) {
+		pr_err("Error: Cannot get available block device\n");
 		return -1;
 	}
+
 	part = detect_blk_dev_or_partition_exist(blk_name, blk_index, BOOTFS_NAME);
-	if (part < 0)
+	if (part < 0) {
+		pr_err("Error: Failed to detect partition %s on %s:%d\n", BOOTFS_NAME, blk_name, blk_index);
 		return -1;
+	}
 
 	snprintf(devpart_str, sizeof(devpart_str), "%d:%d", blk_index, part);
 
-	if (!strcmp("mmc", blk_name))
+	if (!strcmp("mmc", blk_name)) {
 		locations[0].name = "emmc_fs";
-	else if (!strcmp("nvme", blk_name))
+		locations[0].storage = SPLASH_STORAGE_MMC;
+	} else if (!strcmp("nvme", blk_name)) {
 		locations[0].name = "nvme_fs";
-	else
+		locations[0].storage = SPLASH_STORAGE_NVME;
+	} else {
+		pr_err("Error: Unsupported block device type: %s\n", blk_name);
 		return -1;
+	}
 
-	locations[0].storage = SPLASH_STORAGE_NVME;
 	locations[0].flags = SPLASH_STORAGE_FS;
 	locations[0].devpart = strdup(devpart_str);
+
 	return 0;
 }
 

@@ -178,6 +178,7 @@ unsigned char *eth_get_ethaddr(void); /* get the current device MAC */
 
 /* Used only when NetConsole is enabled */
 int eth_is_active(struct udevice *dev); /* Test device for active state */
+bool eth_is_running(void); /* Test if the current device is running */
 int eth_init_state_only(void); /* Set active state */
 void eth_halt_state_only(void); /* Set passive state */
 #endif
@@ -223,6 +224,11 @@ static inline unsigned char *eth_get_ethaddr(void)
 
 /* Used only when NetConsole is enabled */
 int eth_is_active(struct eth_device *dev); /* Test device for active state */
+static __always_inline bool eth_is_running(void)
+{
+	return false;
+}
+
 /* Set active state */
 static __always_inline int eth_init_state_only(void)
 {

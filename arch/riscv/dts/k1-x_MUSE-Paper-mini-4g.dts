@@ -253,8 +253,8 @@
 };
 
 &mipi_dsi {
-	bit-clk = <614400000>;
-	pix-clk = <76800000>;
+	bit-clk = <500000000>;
+	pix-clk = <70000000>;
 	status = "okay";
 };
 

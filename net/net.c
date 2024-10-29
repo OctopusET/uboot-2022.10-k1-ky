@@ -412,7 +412,7 @@ int net_loop(enum proto_t protocol)
 
 	bootstage_mark_name(BOOTSTAGE_ID_ETH_START, "eth_start");
 	net_init();
-	if (eth_is_on_demand_init()) {
+	if (eth_is_on_demand_init() && !eth_is_running()) {
 		eth_halt();
 		eth_set_current();
 		ret = eth_init();
@@ -637,7 +637,7 @@ restart:
 				env_set_hex("filesize", net_boot_file_size);
 				env_set_hex("fileaddr", image_load_addr);
 			}
-			if (protocol != NETCONS)
+			if (protocol != NETCONS && protocol != NFS && protocol != DHCP)
 				eth_halt();
 			else
 				eth_halt_state_only();

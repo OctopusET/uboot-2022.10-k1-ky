@@ -1242,4 +1242,5 @@ U_BOOT_DRIVER(k1x_emac) = {
     .ops = &emac_ops,
     .priv_auto = sizeof(struct emac_priv),
     .plat_auto = sizeof(struct eth_pdata),
+    .flags     = DM_FLAG_OS_PREPARE,
 };

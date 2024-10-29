@@ -512,7 +512,7 @@ void import_env_from_bootfs(void)
 
 #ifdef CONFIG_ENV_IS_IN_NFS
 	// Check if local bootfs exists
-	if (check_bootfs_exists() != 0) {
+	if ((BOOT_MODE_USB != boot_mode) && check_bootfs_exists() != 0) {
 		#ifdef CONFIG_CMD_NET
 			eth_initialize();
 		#endif

@@ -356,6 +356,22 @@ int eth_is_active(struct udevice *dev)
 	return priv->state == ETH_STATE_ACTIVE;
 }
 
+bool eth_is_running(void)
+{
+    struct udevice *dev;
+    struct eth_device_priv *priv;
+
+    dev = eth_get_dev();
+    if (!dev)
+        return false;
+
+    priv = dev_get_uclass_priv(dev);
+    if (!priv)
+        return false;
+
+    return priv->running;
+}
+
 int eth_send(void *packet, int length)
 {
 	struct udevice *current;

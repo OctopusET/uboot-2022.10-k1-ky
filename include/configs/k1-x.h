@@ -29,6 +29,24 @@
 
 #define DDR_TRAINING_DATA_BASE	(0xc0832000)
 
+#if defined(CONFIG_SPL_BOOTING_NON_AI_CORE_SUPPORT) && defined(CONFIG_SPL_BUILD)
+
+#define NON_AI_CORE_STACK_TOP_BASE	(0xc0833000)
+#define CLUSTER1_RVBADDR_LO_ADDR	(0xd4282eb0)
+#define CLUSTER0_RVBADDR_LO_ADDR	(0xd4282db0)
+
+#define K1X_PMU_CORE_STATUS_REGISTER	0xd4282890
+#define CLUSTER0_CPU_RESET_REGISTER	0xd428292c
+
+#define PMU_CAP_CORE0_IDLE_CFG          (0xd4282924)
+#define CPU_PWR_DOWN_VALUE              (0x1b)
+
+/* core4 */
+#define K1X_NON_AI_CORE4_C2_STATUS_BIT	22
+#define K1X_LUANCH_AI_CORE_NUMBER	4
+
+#endif
+
 // sram buffer address that save the DDR software training result
 #define DDR_TRAINING_INFO_BUFF	(0xC0800000)
 #define DDR_TRAINING_INFO_SAVE_ADDR	(0)

@@ -45,7 +45,7 @@ extern u32 ddr_cs_num;
 extern u32 ddr_get_mr8(void);
 extern uint32_t get_manufacture_id(void);
 extern uint32_t get_ddr_rev_id(void);
-static uint32_t byte_mode_tag = 0;
+static uint32_t byte_mode_tag = 0, ddr_mid;
 struct addrmap_info {
 	u32 io_width_per_channel;
 	u32 density_per_channel;
@@ -918,6 +918,141 @@ void top_DDR_rx_ds_odt_vref(unsigned DPHY0_BASE,unsigned combination)
 		break;
 	}
 }
+void top_DDR_ca_ds_odt_vref(unsigned DPHY0_BASE,unsigned cs_num,unsigned combination)
+{
+	unsigned data=0;
+	uint8_t ca_reg2=0xd8;
+	uint8_t ca_odt_cfg=0x0;
+	uint8_t ca_vref=0;
+	unsigned DDRC_BASE=DPHY0_BASE-0x40000;
+
+	printf("Enable & config CLK/CA ODT\n");
+	data=REG32(DPHY0_BASE+COMMON_OFFSET+0x8);
+	data&=0xFFFF00FF;
+
+	switch (combination)
+	{
+		case 0:			//40+odt off
+			break;
+		case 1:		//40+60ohm
+			ca_vref=0x19;//0.3*vddq
+			if(cs_num==2)
+				ca_odt_cfg=0x2;
+			else
+				ca_odt_cfg=0x4;
+
+			break;
+		case 2:		//40+120ohm
+			ca_vref=0x26;//0.325*vddq
+
+			if(cs_num==2)
+				ca_odt_cfg=0x1;
+			else
+				ca_odt_cfg=0x2;
+
+			break;
+		case 3:		//40+40ohm
+			ca_vref=0x11;//0.25*vddq
+
+			if(cs_num==2)
+				ca_odt_cfg=0x3;
+			else
+				ca_odt_cfg=0x6;
+
+			break;
+		case 4:		//40+odt off
+			ca_vref=0x9d;//0.5*vddq
+			break;
+		case 5:			//48+odt off
+			ca_reg2=0xb5;
+			break;
+		case 6:			//40+odt off
+			ca_vref=0xb2;	//0.625*vddq
+			break;
+		default:
+			LogMsg(0,"not support ca ds and odt \n\r");
+			break;
+	}
+
+	data|=(ca_reg2<<8);
+	REG32(DPHY0_BASE+COMMON_OFFSET+0x8)=data;
+	REG32(DPHY0_BASE+COMMON_OFFSET+FREQ_POINT_OFFSET+0x8)=data;
+	REG32(DPHY0_BASE+COMMON_OFFSET+FREQ_POINT_OFFSET*2+0x8)=data;
+	REG32(DPHY0_BASE+COMMON_OFFSET+FREQ_POINT_OFFSET*3+0x8)=data;
+
+	REG32(DPHY0_BASE+subPHY_B_OFFSET+COMMON_OFFSET+0x8)=data;
+	REG32(DPHY0_BASE+subPHY_B_OFFSET+COMMON_OFFSET+FREQ_POINT_OFFSET+0x8)=data;
+	REG32(DPHY0_BASE+subPHY_B_OFFSET+COMMON_OFFSET+FREQ_POINT_OFFSET*2+0x8)=data;
+	REG32(DPHY0_BASE+subPHY_B_OFFSET+COMMON_OFFSET+FREQ_POINT_OFFSET*3+0x8)=data;
+
+	// fp3
+	/*CA ODT 60ohm*/
+	REG32(DDRC_BASE+MC_CH0_BASE+0x0104)= 0xF0800400; //DRAM_Config_2,
+	/*
+	DRAM_config_5
+	on silicon:
+		Device CA ODT : 011  80ohm, bit28~bit30, two CS, so the real ODT is 40ohm
+		Device DQ ODT:  100  60ohm, bit20~bit22
+		Device pull-down drive strength: 100 60ohm bit16~bit19
+	*/
+	REG32(DDRC_BASE+MC_CH0_BASE+0x0110)|=(ca_odt_cfg<<28) | (1<<23);
+	REG32(DDRC_BASE+MC_CH0_BASE+0x0114)|=(ca_odt_cfg<<28) | (1<<23);
+	data=REG32(DDRC_BASE+MC_CH0_BASE+0x010c);
+	data&=0x00FFFFFF;
+	data |= (ca_vref<<24);//dq verf: 0x26->0.375*vddq
+	REG32(DDRC_BASE+MC_CH0_BASE+0x010c)=data;
+	LogMsg(3,"**********************[0x%08X]=0x%08X\n********************",DDRC_BASE+MC_CH0_BASE+0x010c,REG32(DDRC_BASE+MC_CH0_BASE+0x010c));
+
+	//fp2
+	REG32(DDRC_BASE+MC_CH0_BASE+0x0104)= 0xA0800400; //DRAM_Config_2,
+	/*
+	DRAM_config_5
+	on silicon:
+		Device CA ODT : 011  80ohm, bit28~bit30, two CS, so the real ODT is 40ohm
+		Device DQ ODT:  100  60ohm, bit20~bit22
+		Device pull-down drive strength: 100 60ohm bit16~bit19
+	*/
+	REG32(DDRC_BASE+MC_CH0_BASE+0x0110)|=(ca_odt_cfg<<28) | (1<<23);
+	REG32(DDRC_BASE+MC_CH0_BASE+0x0114)|=(ca_odt_cfg<<28) | (1<<23);
+	data=REG32(DDRC_BASE+MC_CH0_BASE+0x010c);
+	data&=0x00FFFFFF;
+	data |= (ca_vref<<24);//dq verf: 0x26->0.375*vddq
+	REG32(DDRC_BASE+MC_CH0_BASE+0x010c)=data;
+	LogMsg(3,"**********************[0x%08X]=0x%08X\n********************",DDRC_BASE+MC_CH0_BASE+0x010c,REG32(DDRC_BASE+MC_CH0_BASE+0x010c));
+
+	//fp1
+	REG32(DDRC_BASE+MC_CH0_BASE+0x0104)= 0x50800400; //DRAM_Config_2,
+	/*
+	DRAM_config_5
+	on silicon:
+		Device CA ODT : 011  80ohm, bit28~bit30, two CS, so the real ODT is 40ohm
+		Device DQ ODT:  100  60ohm, bit20~bit22
+		Device pull-down drive strength: 100 60ohm bit16~bit19
+	*/
+	REG32(DDRC_BASE+MC_CH0_BASE+0x0110)|=(ca_odt_cfg<<28) | (1<<23);
+	REG32(DDRC_BASE+MC_CH0_BASE+0x0114)|=(ca_odt_cfg<<28) | (1<<23);
+	data=REG32(DDRC_BASE+MC_CH0_BASE+0x010c);
+	data&=0x00FFFFFF;
+	data |= (ca_vref<<24);//dq verf: 0x26->0.375*vddq
+	REG32(DDRC_BASE+MC_CH0_BASE+0x010c)=data;
+	LogMsg(3,"**********************[0x%08X]=0x%08X\n********************",DDRC_BASE+MC_CH0_BASE+0x010c,REG32(DDRC_BASE+MC_CH0_BASE+0x010c));
+
+	//fp0
+	REG32(DDRC_BASE+MC_CH0_BASE+0x0104)= 0x00800400; //DRAM_Config_2,
+	/*
+	DRAM_config_5
+	on silicon:
+		Device CA ODT : 011  80ohm, bit28~bit30, two CS, so the real ODT is 40ohm
+		Device DQ ODT:  100  60ohm, bit20~bit22
+		Device pull-down drive strength: 100 60ohm bit16~bit19
+	*/
+	REG32(DDRC_BASE+MC_CH0_BASE+0x0110)|=(ca_odt_cfg<<28) | (1<<23);
+	REG32(DDRC_BASE+MC_CH0_BASE+0x0114)|=(ca_odt_cfg<<28) | (1<<23);
+	data=REG32(DDRC_BASE+MC_CH0_BASE+0x010c);
+	data&=0x00FFFFFF;
+	data |= (ca_vref<<24);//dq verf: 0x26->0.375*vddq
+	REG32(DDRC_BASE+MC_CH0_BASE+0x010c)=data;
+}
 
 void top_DDR_amble_config(unsigned DPHY0_BASE)
 {
@@ -937,7 +1072,7 @@ void top_DDR_amble_config(unsigned DPHY0_BASE)
 	return;
 }
 
-void top_DDR_phy_init(unsigned DDRC_BASE,unsigned fp)
+void top_DDR_phy_init(unsigned DDRC_BASE, unsigned int cs_num, unsigned fp)
 {
 	unsigned DPHY0_BASE = DDRC_BASE + 0x040000;
 	unsigned data = 0;
@@ -968,6 +1103,11 @@ void top_DDR_phy_init(unsigned DDRC_BASE,unsigned fp)
 	top_DDR_amble_config(DPHY0_BASE);
 	top_DDR_wr_ds_odt_vref(DPHY0_BASE, 2);
 	top_DDR_rx_ds_odt_vref(DPHY0_BASE, 2);
+
+	// only enable and set CLK/CA ODT for hynix H9HCNNNFAMMLXR-NEE(8GB,x8,2CS)
+	if ((0 != byte_mode_tag) && (2 == cs_num)&& (SK_HYNIX == ddr_mid)
+		&& (LPDDR4X == io_para_update->devicetype))
+		top_DDR_ca_ds_odt_vref(DPHY0_BASE, cs_num, 1);
 
 	data = REG32(DPHY0_BASE + COMMON_OFFSET + 0x14);
 	data &= 0xFF9FFFEF;
@@ -1028,7 +1168,7 @@ void top_DDR_MC_Phy_Device_Init(unsigned int DDRC_BASE,unsigned int cs_val,unsig
 	}
 
 	top_DDR_MC_init(DDRC_BASE, fp);
-	top_DDR_phy_init(DDRC_BASE, fp);
+	top_DDR_phy_init(DDRC_BASE, cs_val, fp);
 
 	REG32(DFI_PHY_USER_COMMAND_0) = (0x10000001 | (cs_sel << 24)); //MCK6 DFI phy user cmd, set init_start
 	read_data = REG32(DDRC_BASE + MC_CH0_PHY_BASE + 0x3fc);
@@ -1186,12 +1326,12 @@ void adjust_mapping(u32 DDRC_BASE, u32 cs_num, u32 size_mb, u32 mr8_value)
 //     REG32(DDRC_BASE + MC_CH0_BASE + 0x20) = 0x05030632;//8 bank, 17 row, 10 column
 //     REG32(DDRC_BASE + MC_CH0_BASE + 0x24) = 0x05030632;//8 bank, 17 row, 10 column
 
-	LogMsg("DEBUG-ADDR[0x%x]:0x%x\n", (DDRC_BASE + MC_CH0_BASE), REG32(DDRC_BASE + MC_CH0_BASE));
-	LogMsg("DEBUG-ADDR[0x%x]:0x%x\n", (DDRC_BASE + MC_CH0_BASE + 0x4), REG32(DDRC_BASE + MC_CH0_BASE + 0x4));
-	LogMsg("DEBUG-ADDR[0x%x]:0x%x\n", (DDRC_BASE + MC_CH0_BASE + 0x8), REG32(DDRC_BASE + MC_CH0_BASE + 0x8));
-	LogMsg("DEBUG-ADDR[0x%x]:0x%x\n", (DDRC_BASE + MC_CH0_BASE + 0xc), REG32(DDRC_BASE + MC_CH0_BASE + 0xc));
-	LogMsg("DEBUG-ADDR[0x%x]:0x%x\n", (DDRC_BASE + MC_CH0_BASE + 0x20), REG32(DDRC_BASE + MC_CH0_BASE + 0x20));
-	LogMsg("DEBUG-ADDR[0x%x]:0x%x\n", (DDRC_BASE + MC_CH0_BASE + 0x24), REG32(DDRC_BASE + MC_CH0_BASE + 0x24));
+	LogMsg(1, "DEBUG-ADDR[0x%x]:0x%x\n", (DDRC_BASE + MC_CH0_BASE), REG32(DDRC_BASE + MC_CH0_BASE));
+	LogMsg(1, "DEBUG-ADDR[0x%x]:0x%x\n", (DDRC_BASE + MC_CH0_BASE + 0x4), REG32(DDRC_BASE + MC_CH0_BASE + 0x4));
+	LogMsg(1, "DEBUG-ADDR[0x%x]:0x%x\n", (DDRC_BASE + MC_CH0_BASE + 0x8), REG32(DDRC_BASE + MC_CH0_BASE + 0x8));
+	LogMsg(1, "DEBUG-ADDR[0x%x]:0x%x\n", (DDRC_BASE + MC_CH0_BASE + 0xc), REG32(DDRC_BASE + MC_CH0_BASE + 0xc));
+	LogMsg(1, "DEBUG-ADDR[0x%x]:0x%x\n", (DDRC_BASE + MC_CH0_BASE + 0x20), REG32(DDRC_BASE + MC_CH0_BASE + 0x20));
+	LogMsg(1, "DEBUG-ADDR[0x%x]:0x%x\n", (DDRC_BASE + MC_CH0_BASE + 0x24), REG32(DDRC_BASE + MC_CH0_BASE + 0x24));
 }
 
 __maybe_unused static int printf_no_output(const char *fmt, ...)
@@ -1231,6 +1371,7 @@ void lpddr4_silicon_init(u32 ddr_base, const char *ddr_type, u32 data_rate)
 
 	cs_num = ddr_cs_num;
 	info = (struct ddr_training_info_t*)map_sysmem(DDR_TRAINING_INFO_BUFF, 0);
+	ddr_mid = SAMSUNG;
 	top_Common_config();
 
 	if (0 == strcasecmp(ddr_type, "LPDDR4"))
@@ -1247,6 +1388,7 @@ void lpddr4_silicon_init(u32 ddr_base, const char *ddr_type, u32 data_rate)
 	size_mb = ddr_get_density();
 	mr8_value = ddr_get_mr8();
 	byte_mode_tag = (mr8_value >> 6);
+	ddr_mid = get_manufacture_id();
 
 	if (0 != byte_mode_tag) {
 		//reset mc

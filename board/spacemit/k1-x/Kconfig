@@ -98,4 +98,11 @@ config K1_X_BOARD_SIMULATION
 
 endchoice
 
+config SPL_BOOTING_NON_AI_CORE_SUPPORT
+       bool "Support booting non ai core in SPL"
+       depends on SPL_OPENSBI && K1_X_BOARD_ASIC
+       help
+         Support letting the non ai core as the booting cpu and bring it up
+         first
+
 endif

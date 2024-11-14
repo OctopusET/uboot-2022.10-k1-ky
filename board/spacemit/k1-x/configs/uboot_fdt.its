@@ -181,6 +181,34 @@
 				algo = "crc32";
 			};
 		};
+		fdt_19 {
+			description = "k1-x_orangepi-rv2";
+			type = "flat_dt";
+			compression = "none";
+			data = /incbin/("../dtb/k1-x_orangepi-rv2.dtb");
+			hash-1 {
+				algo = "crc32";
+			};
+		};
+		fdt_20 {
+			description = "k1-x_ZT001H";
+			type = "flat_dt";
+			compression = "none";
+			data = /incbin/("../dtb/k1-x_ZT001H.dtb");
+			hash-1 {
+				algo = "crc32";
+			};
+		};
+		fdt_21 {
+			description = "k1-x_uav";
+			type = "flat_dt";
+			compression = "none";
+			data = /incbin/("../dtb/k1-x_uav.dtb");
+			hash-1 {
+				algo = "crc32";
+			};
+		};
+
 	};
 
 	configurations {
@@ -274,6 +302,21 @@
 			description = "k1-x_FusionOne";
 			loadables = "uboot";
 			fdt = "fdt_18";
+		};
+		conf_19 {
+			description = "k1-x_orangepi-rv2";
+			loadables = "uboot";
+			fdt = "fdt_19";
+		};
+		conf_20 {
+			description = "k1-x_ZT001H";
+			loadables = "uboot";
+			fdt = "fdt_20";
+		};
+		conf_21 {
+			description = "k1-x_uav";
+			loadables = "uboot";
+			fdt = "fdt_21";
 		};
 	};
 };

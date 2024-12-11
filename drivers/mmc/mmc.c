@@ -70,8 +70,8 @@ __weak int board_mmc_getcd(struct mmc *mmc)
 #ifdef CONFIG_MMC_TRACE
 void mmmc_trace_before_send(struct mmc *mmc, struct mmc_cmd *cmd)
 {
-	pr_debug("CMD_SEND:%d\n", cmd->cmdidx);
-	pr_debug("\t\tARG\t\t\t 0x%08x\n", cmd->cmdarg);
+	printf("CMD_SEND:%d\n", cmd->cmdidx);
+	printf("\t\tARG\t\t\t 0x%08x\n", cmd->cmdarg);
 }
 
 void mmmc_trace_after_send(struct mmc *mmc, struct mmc_cmd *cmd, int ret)
@@ -80,48 +80,48 @@ void mmmc_trace_after_send(struct mmc *mmc, struct mmc_cmd *cmd, int ret)
 	u8 *ptr;
 
 	if (ret) {
-		pr_debug("\t\tRET\t\t\t %d\n", ret);
+		printf("\t\tRET\t\t\t %d\n", ret);
 	} else {
 		switch (cmd->resp_type) {
 		case MMC_RSP_NONE:
-			pr_debug("\t\tMMC_RSP_NONE\n");
+			printf("\t\tMMC_RSP_NONE\n");
 			break;
 		case MMC_RSP_R1:
-			pr_debug("\t\tMMC_RSP_R1,5,6,7 \t 0x%08x \n",
+			printf("\t\tMMC_RSP_R1,5,6,7 \t 0x%08x \n",
 				cmd->response[0]);
 			break;
 		case MMC_RSP_R1b:
-			pr_debug("\t\tMMC_RSP_R1b\t\t 0x%08x \n",
+			printf("\t\tMMC_RSP_R1b\t\t 0x%08x \n",
 				cmd->response[0]);
 			break;
 		case MMC_RSP_R2:
-			pr_debug("\t\tMMC_RSP_R2\t\t 0x%08x \n",
+			printf("\t\tMMC_RSP_R2\t\t 0x%08x \n",
 				cmd->response[0]);
-			pr_debug("\t\t          \t\t 0x%08x \n",
+			printf("\t\t          \t\t 0x%08x \n",
 				cmd->response[1]);
-			pr_debug("\t\t          \t\t 0x%08x \n",
+			printf("\t\t          \t\t 0x%08x \n",
 				cmd->response[2]);
-			pr_debug("\t\t          \t\t 0x%08x \n",
+			printf("\t\t          \t\t 0x%08x \n",
 				cmd->response[3]);
-			pr_debug("\n");
-			pr_debug("\t\t\t\t\tDUMPING DATA\n");
+			printf("\n");
+			printf("\t\t\t\t\tDUMPING DATA\n");
 			for (i = 0; i < 4; i++) {
 				int j;
-				pr_debug("\t\t\t\t\t%03d - ", i*4);
+				printf("\t\t\t\t\t%03d - ", i*4);
 				ptr = (u8 *)&cmd->response[i];
 				ptr += 3;
 				for (j = 0; j < 4; j++){
-					pr_debug("%02x ", *ptr--);
+					printf("%02x ", *ptr--);
 				}
-				pr_debug("\n");
+				printf("\n");
 			}
 			break;
 		case MMC_RSP_R3:
-			pr_debug("\t\tMMC_RSP_R3,4\t\t 0x%08x \n",
+			printf("\t\tMMC_RSP_R3,4\t\t 0x%08x \n",
 				cmd->response[0]);
 			break;
 		default:
-			pr_debug("\t\tERROR MMC rsp not supported\n");
+			printf("\t\tERROR MMC rsp not supported\n");
 			break;
 		}
 	}
@@ -132,7 +132,7 @@ void mmc_trace_state(struct mmc *mmc, struct mmc_cmd *cmd)
 	int status;
 
 	status = (cmd->response[0] & MMC_STATUS_CURR_STATE) >> 9;
-	pr_debug("CURR STATE:%d\n", status);
+	printf("CURR STATE:%d\n", status);
 }
 #endif
 

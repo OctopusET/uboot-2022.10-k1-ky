@@ -142,6 +142,7 @@ int lcd_icnl9911c_init(void);
 int lcd_icnl9951r_init(void);
 int lcd_gx09inx101_init(void);
 int lcd_jd9365dah3_init(void);
+int lcd_ft8201sinx101_init(void);
 int lcd_lt8911ext_edp_1080p_init(void);
 
 #endif /*_SPACEMIT_DSI_COMMON_H_*/

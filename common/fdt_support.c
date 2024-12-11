@@ -309,6 +309,7 @@ int fdt_chosen(void *fdt)
 		}
 	}
 
+	env_set_hex("fdt_addr", (ulong)fdt);
 	str = board_fdt_chosen_bootargs();
 
 	if (str) {

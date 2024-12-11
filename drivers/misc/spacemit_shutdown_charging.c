@@ -43,7 +43,6 @@
 
 #define BATTERY_RED_LIGHT_INDEX		0x0
 #define BATTERY_GREEN_LIGHT_INDEX	0x1
-#define DISABLE_BATTERY_LED		0x1
 
 #define MAX_GPIO_COUNT		3
 #define MAX_REGULATOR_COUNT	7
@@ -109,6 +108,7 @@ struct shutdown_charge {
 	/* led charging indicator */
 	struct gpio_desc led_indicators[MAX_GPIO_COUNT];
 	int gpio_cnt;
+	u32 valid_level;
 	/* charget */
 	struct udevice *charger[MAX_CHARGER_COUNT];
 	const char **charger_name;
@@ -261,10 +261,17 @@ static int shutdown_charge_probe(struct udevice *dev)
 		return priv->gpio_cnt;
 	}
 
+	ret = dev_read_u32_array(dev, "valid-level", &priv->valid_level, 1);
+	if (ret) {
+		printf("get valid-level of changer led failed");
+		return ret;
+	}
+
 	/* disable the battery led */
 	for (int i = 0; i < priv->gpio_cnt; ++i) {
-		dm_gpio_set_value(&priv->led_indicators[i], DISABLE_BATTERY_LED);
+		dm_gpio_set_value(&priv->led_indicators[i], !(!!priv->valid_level));
 	}
+
 
 	pwr_key_status = regulator_get_value(priv->wkup_set[WAKEUP_SOURCE_POWER_KEY_EVENT]);
 
@@ -346,11 +353,11 @@ static int shutdown_charge_probe(struct udevice *dev)
 			}
 
 			if (uV >= VTHRESHOLD2) {
-				dm_gpio_set_value(&priv->led_indicators[BATTERY_RED_LIGHT_INDEX], DISABLE_BATTERY_LED);
-				dm_gpio_set_value(&priv->led_indicators[BATTERY_GREEN_LIGHT_INDEX], !DISABLE_BATTERY_LED);
+				dm_gpio_set_value(&priv->led_indicators[BATTERY_RED_LIGHT_INDEX], !(!!priv->valid_level));
+				dm_gpio_set_value(&priv->led_indicators[BATTERY_GREEN_LIGHT_INDEX], !!priv->valid_level);
 			} else {
 				dm_gpio_set_value(&priv->led_indicators[BATTERY_RED_LIGHT_INDEX], !!(plugout_count % 2));
-				dm_gpio_set_value(&priv->led_indicators[BATTERY_GREEN_LIGHT_INDEX], DISABLE_BATTERY_LED);
+				dm_gpio_set_value(&priv->led_indicators[BATTERY_GREEN_LIGHT_INDEX], !(!!priv->valid_level));
 			}
 
 			/* enable rtc tick modeule & 1s  */
@@ -384,8 +391,8 @@ static int shutdown_charge_probe(struct udevice *dev)
 
 					/* bring up the system */
 					if (uV >= VTHRESHOLD1) {
-						dm_gpio_set_value(&priv->led_indicators[BATTERY_RED_LIGHT_INDEX], !DISABLE_BATTERY_LED);
-						dm_gpio_set_value(&priv->led_indicators[BATTERY_GREEN_LIGHT_INDEX], DISABLE_BATTERY_LED);
+						dm_gpio_set_value(&priv->led_indicators[BATTERY_RED_LIGHT_INDEX], !!priv->valid_level);
+						dm_gpio_set_value(&priv->led_indicators[BATTERY_GREEN_LIGHT_INDEX], !(!!priv->valid_level));
 						plugin_and_pwr_key_flag = 0;
 						goto out;
 					}
@@ -394,7 +401,7 @@ static int shutdown_charge_probe(struct udevice *dev)
 
 						plugin_and_pwr_key_flag = 1;
 						dm_gpio_set_value(&priv->led_indicators[BATTERY_RED_LIGHT_INDEX], !!(plugin_count % 2));
-						dm_gpio_set_value(&priv->led_indicators[BATTERY_GREEN_LIGHT_INDEX], DISABLE_BATTERY_LED);
+						dm_gpio_set_value(&priv->led_indicators[BATTERY_GREEN_LIGHT_INDEX], !(!!priv->valid_level));
 
 						if (uV >= VTHRESHOLD0) {
 
@@ -403,16 +410,16 @@ static int shutdown_charge_probe(struct udevice *dev)
 
 					} else {
 						plugin_and_pwr_key_flag = 0;
-						dm_gpio_set_value(&priv->led_indicators[BATTERY_RED_LIGHT_INDEX], !DISABLE_BATTERY_LED);
-						dm_gpio_set_value(&priv->led_indicators[BATTERY_GREEN_LIGHT_INDEX], DISABLE_BATTERY_LED);
+						dm_gpio_set_value(&priv->led_indicators[BATTERY_RED_LIGHT_INDEX], !!priv->valid_level);
+						dm_gpio_set_value(&priv->led_indicators[BATTERY_GREEN_LIGHT_INDEX], !(!!priv->valid_level));
 					}
 				} else {
 
 					plugin_and_pwr_key_flag = 0;
 
 					/* the led is alway on */
-					dm_gpio_set_value(&priv->led_indicators[BATTERY_RED_LIGHT_INDEX], !DISABLE_BATTERY_LED);
-					dm_gpio_set_value(&priv->led_indicators[BATTERY_GREEN_LIGHT_INDEX], DISABLE_BATTERY_LED);
+					dm_gpio_set_value(&priv->led_indicators[BATTERY_RED_LIGHT_INDEX], !!priv->valid_level);
+					dm_gpio_set_value(&priv->led_indicators[BATTERY_GREEN_LIGHT_INDEX], !(!!priv->valid_level));
 
 					if (uV >= VTHRESHOLD0) {
 						if (plugin_count < CHARGER_LIGHT_FLASHES_CNT) {
@@ -424,8 +431,8 @@ static int shutdown_charge_probe(struct udevice *dev)
 				}
 			} else {
 				/* the led is alway on */
-				dm_gpio_set_value(&priv->led_indicators[BATTERY_RED_LIGHT_INDEX], DISABLE_BATTERY_LED);
-				dm_gpio_set_value(&priv->led_indicators[BATTERY_GREEN_LIGHT_INDEX], !DISABLE_BATTERY_LED);
+				dm_gpio_set_value(&priv->led_indicators[BATTERY_RED_LIGHT_INDEX], !(!!priv->valid_level));
+				dm_gpio_set_value(&priv->led_indicators[BATTERY_GREEN_LIGHT_INDEX], !!priv->valid_level);
 
 				/* bringup the system */
 				if (pwr_key_status & PWRKEY_FAILING_EVENT)

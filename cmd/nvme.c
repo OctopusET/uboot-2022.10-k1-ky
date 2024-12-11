@@ -9,6 +9,7 @@
 #include <command.h>
 #include <dm.h>
 #include <nvme.h>
+#include <init.h>
 
 static int nvme_curr_dev;
 
@@ -16,6 +17,9 @@ static int do_nvme(struct cmd_tbl *cmdtp, int flag, int argc,
 		   char *const argv[])
 {
 	int ret;
+#ifndef CONFIG_PCI_INIT_R
+	pci_init();
+#endif
 
 	if (argc == 2) {
 		if (strncmp(argv[1], "scan", 4) == 0) {

@@ -71,7 +71,9 @@ static int i2c_isr_set_cleared(struct spacemit_i2c *base, unsigned long set_mask
 
 	do {
 		isr = readl(&base->isr);
-		udelay(10);
+		/* udelay(10); */
+		/* this delay time can't exceed the watchog timeout period */
+		__udelay(10);
 		if (timeout-- < 0)
 			return 0;
 	} while (((isr & set_mask) != set_mask)

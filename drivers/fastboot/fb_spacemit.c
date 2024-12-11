@@ -884,6 +884,8 @@ const struct oem_config_info config_info[] = {
 	{ "part#", TLV_CODE_PART_NUMBER, 32, NULL },
 	{ "serial#", TLV_CODE_SERIAL_NUMBER, 32, NULL },
 	{ "ethaddr", TLV_CODE_MAC_BASE, 17, NULL },
+	{ "wifi_addr", TLV_CODE_WIFI_MAC_ADDR, 17, NULL },
+	{ "bt_addr", TLV_CODE_BLUETOOTH_ADDR, 17, NULL },
 	{ "ethsize", TLV_CODE_MAC_SIZE, 6, NULL },/*size must equal or less than 65535*/
 	{ "manufacture_date", TLV_CODE_MANUF_DATE, 19, NULL },
 	{ "device_version", TLV_CODE_DEVICE_VERSION, 3, NULL },

@@ -86,12 +86,6 @@
 		&range GPIO_124 1 (MUX_MODE0 | EDGE_NONE | PULL_UP   | PAD_1V8_DS2)
 		&range GPIO_125 3 (MUX_MODE0 | EDGE_NONE | PULL_DOWN | PAD_1V8_DS2)
 	>;
-
-	gpio80_pmx_func0: gpio80_pmx_func0 {
-		pinctrl-single,pins = <
-			K1X_PADCONF(GPIO_80, MUX_MODE0, (EDGE_BOTH | PULL_UP | PAD_3V_DS4))  /* mmc cd */
-		>;
-	};
 };
 
 &gpio{
@@ -137,13 +131,23 @@
 };
 
 &sdhci0 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_mmc1 &gpio80_pmx_func0>;
+	pinctrl-names = "default","fast";
+	pinctrl-0 = <&pinctrl_mmc1>;
+	pinctrl-1 = <&pinctrl_mmc1_fast>;
 	bus-width = <4>;
 	cd-gpios = <&gpio 80 0>;
 	cd-inverted;
-	cap-sd-highspeed;
+	vmmc-supply = <&dcdc_9>;
+	vqmmc-supply = <&ldo_23>;
+	spacemit,aib_mmc1_io_reg = <0xD401E81C>;
+	spacemit,apbc_asfar_reg = <0xD4015050>;
+	spacemit,apbc_assar_reg = <0xD4015054>;
+	spacemit,rx_dline_reg = <0x0>;
+	spacemit,tx_dline_reg = <0x0>;
+	spacemit,tx_delaycode = <0x7f>;
+	spacemit,rx_tuning_limit = <50>;
 	sdh-phy-module = <0>;
+	clk-src-freq = <204800000>;
 	status = "okay";
 };
 
@@ -154,6 +158,7 @@
 	mmc-hs400-1_8v;
 	mmc-hs400-enhanced-strobe;
 	sdh-phy-module = <1>;
+	clk-src-freq = <375000000>;
 	status = "okay";
 };
 

@@ -667,6 +667,10 @@ void update_ddr_info(void)
 {
 	uint8_t *info;
 
+	ddr_cs_num = 0;
+	ddr_datarate = 0;
+	ddr_type = NULL;
+
 	if (k1x_eeprom_init() < 0)
 		return;
 
@@ -681,8 +685,6 @@ void update_ddr_info(void)
 	// if fail to get ddr cs number from eeprom, update it from dts node
 	if (0 == spacemit_eeprom_read((uint8_t*)&ddr_cs_num, TLV_CODE_DDR_CSNUM))
 		pr_info("Get ddr cs num %d from eeprom\n", ddr_cs_num);
-	else
-		ddr_cs_num = 0;
 
 	// if fail to get ddr cs number from eeprom, update it from dts node
 	if (0 == spacemit_eeprom_read((uint8_t*)&ddr_datarate, TLV_CODE_DDR_DATARATE)) {
@@ -690,8 +692,6 @@ void update_ddr_info(void)
 		ddr_datarate = be16_to_cpu(ddr_datarate);
 		pr_info("Get ddr datarate %d from eeprom\n", ddr_datarate);
 	}
-	else
-		ddr_datarate = 0;
 }
 
 void spl_board_init(void)

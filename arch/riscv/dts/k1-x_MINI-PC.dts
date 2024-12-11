@@ -116,12 +116,6 @@
 			K1X_PADCONF(GPIO_66, MUX_MODE0, (EDGE_NONE | PULL_UP | PAD_1V8_DS2))    /* drive_vbus1_iso */
 		>;
 	};
-
-	gpio80_pmx_func0: gpio80_pmx_func0 {
-		pinctrl-single,pins = <
-			K1X_PADCONF(GPIO_80, MUX_MODE0, (EDGE_BOTH | PULL_UP | PAD_3V_DS4))  /* mmc cd */
-		>;
-	};
 };
 
 &gpio{
@@ -173,6 +167,7 @@
 	mmc-hs400-1_8v;
 	mmc-hs400-enhanced-strobe;
 	sdh-phy-module = <1>;
+	clk-src-freq = <375000000>;
 	status = "okay";
 };
 

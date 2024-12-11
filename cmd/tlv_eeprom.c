@@ -231,6 +231,8 @@ static struct tlv_code_desc tlv_code_list[] = {
 	{ TLV_CODE_PART_NUMBER,    "Part Number"},
 	{ TLV_CODE_SERIAL_NUMBER,  "Serial Number"},
 	{ TLV_CODE_MAC_BASE,       "Base MAC Address"},
+	{ TLV_CODE_WIFI_MAC_ADDR,  "Wifi MAC Address"},
+	{ TLV_CODE_BLUETOOTH_ADDR, "Bluetooth Address"},
 	{ TLV_CODE_MANUF_DATE,     "Manufacture Date"},
 	{ TLV_CODE_DEVICE_VERSION, "Device Version"},
 	{ TLV_CODE_LABEL_REVISION, "Label Revision"},
@@ -313,6 +315,8 @@ static void decode_tlv(struct tlvinfo_tlv *tlv)
 		value[tlv->length] = 0;
 		break;
 	case TLV_CODE_MAC_BASE:
+	case TLV_CODE_WIFI_MAC_ADDR:
+	case TLV_CODE_BLUETOOTH_ADDR:
 		sprintf(value, "%02X:%02X:%02X:%02X:%02X:%02X",
 			tlv->value[0], tlv->value[1], tlv->value[2],
 			tlv->value[3], tlv->value[4], tlv->value[5]);
@@ -663,6 +667,8 @@ static bool tlvinfo_add_tlv(u8 *eeprom, int tcode, char *strval)
 		new_tlv_len = 19;
 		break;
 	case TLV_CODE_MAC_BASE:
+	case TLV_CODE_WIFI_MAC_ADDR:
+	case TLV_CODE_BLUETOOTH_ADDR:
 		if (set_mac(data, strval) != 0)
 			return false;
 		new_tlv_len = 6;

@@ -20,15 +20,6 @@
 		};
 
 		fdt_1 {
-			description = "k1-x_evb";
-			type = "flat_dt";
-			compression = "none";
-			data = /incbin/("../dtb/k1-x_evb.dtb");
-			hash-1 {
-				algo = "crc32";
-			};
-		};
-		fdt_2 {
 			description = "k1-x_deb1";
 			type = "flat_dt";
 			compression = "none";
@@ -37,16 +28,7 @@
 				algo = "crc32";
 			};
 		};
-		fdt_3 {
-			description = "k1-x_deb2";
-			type = "flat_dt";
-			compression = "none";
-			data = /incbin/("../dtb/k1-x_deb2.dtb");
-			hash-1 {
-				algo = "crc32";
-			};
-		};
-		fdt_4 {
+		fdt_2 {
 			description = "k1-x_hs450";
 			type = "flat_dt";
 			compression = "none";
@@ -55,7 +37,7 @@
 				algo = "crc32";
 			};
 		};
-		fdt_5 {
+		fdt_3 {
 			description = "k1-x_kx312";
 			type = "flat_dt";
 			compression = "none";
@@ -64,7 +46,7 @@
 				algo = "crc32";
 			};
 		};
-		fdt_6 {
+		fdt_4 {
 			description = "k1-x_MINI-PC";
 			type = "flat_dt";
 			compression = "none";
@@ -73,7 +55,7 @@
 				algo = "crc32";
 			};
 		};
-		fdt_7 {
+		fdt_5 {
 			description = "k1-x_mingo";
 			type = "flat_dt";
 			compression = "none";
@@ -82,7 +64,7 @@
 				algo = "crc32";
 			};
 		};
-		fdt_8 {
+		fdt_6 {
 			description = "k1-x_MUSE-N1";
 			type = "flat_dt";
 			compression = "none";
@@ -91,7 +73,7 @@
 				algo = "crc32";
 			};
 		};
-		fdt_9 {
+		fdt_7 {
 			description = "k1-x_MUSE-Pi";
 			type = "flat_dt";
 			compression = "none";
@@ -100,7 +82,7 @@
 				algo = "crc32";
 			};
 		};
-		fdt_10 {
+		fdt_8 {
 			description = "k1-x_milkv-jupiter";
 			type = "flat_dt";
 			compression = "none";
@@ -109,8 +91,8 @@
 				algo = "crc32";
 			};
 		};
-		fdt_11 {
-			description = "k1-x_MUSE-Book.dtb";
+		fdt_9 {
+			description = "k1-x_MUSE-Book";
 			type = "flat_dt";
 			compression = "none";
 			data = /incbin/("../dtb/k1-x_MUSE-Book.dtb");
@@ -118,7 +100,7 @@
 				algo = "crc32";
 			};
 		};
-		fdt_12 {
+		fdt_10 {
 			description = "m1-x_milkv-jupiter";
 			type = "flat_dt";
 			compression = "none";
@@ -127,7 +109,7 @@
 				algo = "crc32";
 			};
 		};
-		fdt_13 {
+		fdt_11 {
 			description = "k1-x_lpi3a";
 			type = "flat_dt";
 			compression = "none";
@@ -136,7 +118,7 @@
 				algo = "crc32";
 			};
 		};
-		fdt_14 {
+		fdt_12 {
 			description = "k1-x_MUSE-Card";
 			type = "flat_dt";
 			compression = "none";
@@ -145,7 +127,7 @@
 				algo = "crc32";
 			};
 		};
-		fdt_15 {
+		fdt_13 {
 			description = "k1-x_MUSE-Paper";
 			type = "flat_dt";
 			compression = "none";
@@ -154,7 +136,7 @@
 				algo = "crc32";
 			};
 		};
-		fdt_16 {
+		fdt_14 {
 			description = "k1-x_MUSE-Paper-mini-4g";
 			type = "flat_dt";
 			compression = "none";
@@ -163,7 +145,7 @@
 				algo = "crc32";
 			};
 		};
-		fdt_17 {
+		fdt_15 {
 			description = "k1-x_baton-camera";
 			type = "flat_dt";
 			compression = "none";
@@ -172,7 +154,7 @@
 				algo = "crc32";
 			};
 		};
-		fdt_18 {
+		fdt_16 {
 			description = "k1-x_FusionOne";
 			type = "flat_dt";
 			compression = "none";
@@ -181,7 +163,7 @@
 				algo = "crc32";
 			};
 		};
-		fdt_19 {
+		fdt_17 {
 			description = "k1-x_orangepi-rv2";
 			type = "flat_dt";
 			compression = "none";
@@ -190,7 +172,7 @@
 				algo = "crc32";
 			};
 		};
-		fdt_20 {
+		fdt_18 {
 			description = "k1-x_ZT001H";
 			type = "flat_dt";
 			compression = "none";
@@ -199,7 +181,7 @@
 				algo = "crc32";
 			};
 		};
-		fdt_21 {
+		fdt_19 {
 			description = "k1-x_uav";
 			type = "flat_dt";
 			compression = "none";
@@ -208,115 +190,118 @@
 				algo = "crc32";
 			};
 		};
-
+		fdt_20 {
+			description = "k1-x_MUSE-Paper2";
+			type = "flat_dt";
+			compression = "none";
+			data = /incbin/("../dtb/k1-x_MUSE-Paper2.dtb");
+			hash-1 {
+				algo = "crc32";
+			};
+		};
 	};
 
 	configurations {
-		default = "conf_2";
+		default = "conf_1";
 		conf_1 {
-			description = "k1-x_evb";
+			description = "k1-x_deb1";
 			loadables = "uboot";
 			fdt = "fdt_1";
 		};
 		conf_2 {
-			description = "k1-x_deb1";
+			description = "k1-x_hs450";
 			loadables = "uboot";
 			fdt = "fdt_2";
 		};
 		conf_3 {
-			description = "k1-x_deb2";
+			description = "k1-x_kx312";
 			loadables = "uboot";
 			fdt = "fdt_3";
 		};
 		conf_4 {
-			description = "k1-x_hs450";
+			description = "k1-x_MINI-PC";
 			loadables = "uboot";
 			fdt = "fdt_4";
 		};
 		conf_5 {
-			description = "k1-x_kx312";
+			description = "k1-x_mingo";
 			loadables = "uboot";
 			fdt = "fdt_5";
 		};
 		conf_6 {
-			description = "k1-x_MINI-PC";
+			description = "k1-x_MUSE-N1";
 			loadables = "uboot";
 			fdt = "fdt_6";
 		};
 		conf_7 {
-			description = "k1-x_mingo";
+			description = "k1-x_MUSE-Pi";
 			loadables = "uboot";
 			fdt = "fdt_7";
 		};
 		conf_8 {
-			description = "k1-x_MUSE-N1";
+			description = "k1-x_milkv-jupiter";
 			loadables = "uboot";
 			fdt = "fdt_8";
 		};
 		conf_9 {
-			description = "k1-x_MUSE-Pi";
+			description = "k1-x_MUSE-Book";
 			loadables = "uboot";
 			fdt = "fdt_9";
 		};
 		conf_10 {
-			description = "k1-x_milkv-jupiter";
+			description = "m1-x_milkv-jupiter";
 			loadables = "uboot";
 			fdt = "fdt_10";
 		};
 		conf_11 {
-			description = "k1-x_MUSE-Book";
+			description = "k1-x_lpi3a";
 			loadables = "uboot";
 			fdt = "fdt_11";
 		};
 		conf_12 {
-			description = "m1-x_milkv-jupiter";
+			description = "k1-x_MUSE-Card";
 			loadables = "uboot";
 			fdt = "fdt_12";
 		};
 		conf_13 {
-			description = "k1-x_lpi3a";
+			description = "k1-x_MUSE-Paper";
 			loadables = "uboot";
 			fdt = "fdt_13";
 		};
 		conf_14 {
-			description = "k1-x_MUSE-Card";
+			description = "k1-x_MUSE-Paper-mini-4g";
 			loadables = "uboot";
 			fdt = "fdt_14";
 		};
 		conf_15 {
-			description = "k1-x_MUSE-Paper";
+			description = "k1-x_baton-camera";
 			loadables = "uboot";
 			fdt = "fdt_15";
 		};
 		conf_16 {
-			description = "k1-x_MUSE-Paper-mini-4g";
+			description = "k1-x_FusionOne";
 			loadables = "uboot";
 			fdt = "fdt_16";
 		};
 		conf_17 {
-			description = "k1-x_baton-camera";
+			description = "k1-x_orangepi-rv2";
 			loadables = "uboot";
 			fdt = "fdt_17";
 		};
 		conf_18 {
-			description = "k1-x_FusionOne";
+			description = "k1-x_ZT001H";
 			loadables = "uboot";
 			fdt = "fdt_18";
 		};
 		conf_19 {
-			description = "k1-x_orangepi-rv2";
+			description = "k1-x_uav";
 			loadables = "uboot";
 			fdt = "fdt_19";
 		};
 		conf_20 {
-			description = "k1-x_ZT001H";
+			description = "k1-x_MUSE-Paper2";
 			loadables = "uboot";
 			fdt = "fdt_20";
-		};
-		conf_21 {
-			description = "k1-x_uav";
-			loadables = "uboot";
-			fdt = "fdt_21";
 		};
 	};
 };

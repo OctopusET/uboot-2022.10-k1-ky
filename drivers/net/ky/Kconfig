@@ -1,0 +1,8 @@
+config KY_X1_EMAC
+	bool "Sapcemit x1 Emac Driver"
+	depends on DM_ETH
+	select PHYLIB
+	select DM_RESET
+	help
+	  This Driver support Ky x1 Ethernet MAC
+	  Say Y to enable support for the Ky Ethernet.

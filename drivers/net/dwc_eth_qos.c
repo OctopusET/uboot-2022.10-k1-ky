@@ -1678,6 +1678,10 @@ static const struct udevice_id eqos_ids[] = {
 	{
 		.compatible = "spacemit,k1pro-dwmac-eqos",
 		.data = (ulong)&eqos_spacemit_config
+#if IS_ENABLED(CONFIG_DWC_ETH_QOS_KY)
+	{
+		.compatible = "ky,k1pro-dwmac-eqos",
+		.data = (ulong)&eqos_ky_config
 	},
 #endif
 

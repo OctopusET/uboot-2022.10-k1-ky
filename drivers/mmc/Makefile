@@ -78,6 +78,8 @@ obj-$(CONFIG_MMC_SDHCI_XENON)		+= xenon_sdhci.o
 obj-$(CONFIG_MMC_SDHCI_ZYNQ)		+= zynq_sdhci.o
 obj-$(CONFIG_MMC_SDHCI_SPACEMIT)	+= spacemit_sdhci.o
 obj-$(CONFIG_MMC_SDHCI_K1X)		+= k1x_sdhci.o
+obj-$(CONFIG_MMC_SDHCI_KY)	+= ky_sdhci.o
+obj-$(CONFIG_MMC_SDHCI_X1)		+= x1_sdhci.o
 
 obj-$(CONFIG_MMC_SUNXI)			+= sunxi_mmc.o
 obj-$(CONFIG_MMC_PITON)			+= piton_mmc.o

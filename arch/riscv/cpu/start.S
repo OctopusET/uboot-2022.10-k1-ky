@@ -19,6 +19,7 @@
 
 #if defined(CONFIG_SPL_BOOTING_NON_AI_CORE_SUPPORT) && defined(CONFIG_SPL_BUILD)
 #include <configs/k1-x.h>
+#include <configs/x1.h>
 #endif
 
 #ifdef CONFIG_32BIT

@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: GPL-2.0
+# common clock support for KY SoC family.
+
+config KY_K1PRO_CCU
+	tristate "Clock support for Ky k1pro SoCs"
+	depends on CLK
+        depends on CLK_CCF
+	help
+	  Build the driver for Ky K1pro Clock Driver.
+
+config KY_X1_CCU
+        tristate "Clock support for Ky x1 SoCs"
+        select CLK
+        select CLK_CCF
+        help
+          Build the driver for Ky K1x Clock Driver.
+
+

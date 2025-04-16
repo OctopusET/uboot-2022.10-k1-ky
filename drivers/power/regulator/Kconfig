@@ -415,4 +415,17 @@ config SPL_DM_REGULATOR_SPACEMIT_HUB
 	depends on SPL_DM_REGULATOR && DM_REGULATOR_SPACEMIT_HUB
 	help
 	  Say Y here if you want to support onboard usb hubs on Spacemit
+
+config DM_REGULATOR_KY_HUB
+	tristate "Ky onboard USB hub regulator wrapper support"
+	depends on DM_REGULATOR
+	help
+	  Say Y here if you want to support onboard usb hubs on Ky
+	  platform. If unsure, say Y when compile for Ky platform.
+
+config SPL_DM_REGULATOR_KY_HUB
+	tristate "Ky onboard USB hub regulator wrapper support in SPL"
+	depends on SPL_DM_REGULATOR && DM_REGULATOR_KY_HUB
+	help
+	  Say Y here if you want to support onboard usb hubs on Ky
 	  platform in SPL.

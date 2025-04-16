@@ -2648,6 +2648,14 @@ config SPACEMIT_FLASH
 	help
 	  enable spacemit flash behavior, use for flashing function.
 
+menu "ky commands"
+
+config KY_FLASH
+	bool "enable ky flash behavior"
+	default n
+	help
+	  enable ky flash behavior, use for flashing function.
+
 config SPL_FASTBOOT
 	bool "Enable SPL Fastboot Mode"
 	default n

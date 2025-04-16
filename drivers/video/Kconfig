@@ -940,5 +940,6 @@ config VIDEO_VCXK
 	  and VC8K devices on various boards from BuS Elektronik GmbH.
 
 source "drivers/video/spacemit/Kconfig"
+source "drivers/video/ky/Kconfig"
 
 endmenu

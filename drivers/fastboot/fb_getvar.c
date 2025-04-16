@@ -16,6 +16,7 @@
 #include <asm/global_data.h>
 #include <mtd.h>
 #include <fb_spacemit.h>
+#include <fb_ky.h>
 #include <command.h>
 
 DECLARE_GLOBAL_DATA_PTR;
@@ -29,7 +30,7 @@ static void getvar_version_baseband(char *var_parameter, char *response);
 static void getvar_product(char *var_parameter, char *response);
 static void getvar_platform(char *var_parameter, char *response);
 static void getvar_current_slot(char *var_parameter, char *response);
-#if CONFIG_IS_ENABLED(SPACEMIT_FLASH)
+#if CONFIG_IS_ENABLED(SPACEMIT_FLASH) || CONFIG_IS_ENABLED(KY_FLASH)
 static void getvar_mtd_size(char *var_parameter, char *response);
 static void getvar_blk_size(char *var_parameter, char *response);
 #endif
@@ -75,7 +76,7 @@ static const struct {
 	}, {
 		.variable = "platform",
 		.dispatch = getvar_platform
-#if CONFIG_IS_ENABLED(SPACEMIT_FLASH)
+#if CONFIG_IS_ENABLED(SPACEMIT_FLASH) || CONFIG_IS_ENABLED(KY_FLASH)
 	}, {
 		.variable = "mtd-size",
 		.dispatch = getvar_mtd_size
@@ -234,7 +235,7 @@ static void getvar_current_slot(char *var_parameter, char *response)
 	fastboot_okay("a", response);
 }
 
-#if CONFIG_IS_ENABLED(SPACEMIT_FLASH)
+#if CONFIG_IS_ENABLED(SPACEMIT_FLASH) || CONFIG_IS_ENABLED(KY_FLASH)
 /**
  * @brief Get the mtd size and return, if not mtd dev exists, it would return NULL.
 	if there have multi mtd devices, it would only return the first one.

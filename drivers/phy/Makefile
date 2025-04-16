@@ -8,6 +8,7 @@ obj-y += marvell/
 obj-y += rockchip/
 obj-y += socionext/
 obj-y += spacemit/
+obj-y += ky/
 
 obj-$(CONFIG_$(SPL_)PHY) += phy-uclass.o
 obj-$(CONFIG_$(SPL_)NOP_PHY) += nop-phy.o

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (c) 2023 Spacemit, Inc
+ * Copyright (c) 2023 Ky, Inc
  */
 
 #include <config.h>
@@ -14,6 +15,7 @@
 #include <linux/compat.h>
 #include <android_image.h>
 #include <fb_spacemit.h>
+#include <fb_ky.h>
 #include <fastboot-internal.h>
 #include <u-boot/crc.h>
 #include <mapmem.h>
@@ -336,7 +338,7 @@ void fastboot_mtd_flash_write(const char *cmd, void *download_buffer,
 	u64 compare_val = 0;
 
 	printf("Starting fastboot_mtd_flash_write for %s\n", cmd);
-#ifdef CONFIG_SPACEMIT_FLASH
+#if defined(CONFIG_SPACEMIT_FLASH) || defined(CONFIG_KY_FLASH)
 	static struct flash_dev *fdev = NULL;
 
 	if (fdev == NULL){

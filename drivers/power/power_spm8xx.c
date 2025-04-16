@@ -6,6 +6,7 @@
 #include <linux/bug.h>
 #include <asm/barrier.h>
 #include <power/spacemit/spacemit_pmic.h>
+#include <power/ky/ky_pmic.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -22,6 +23,9 @@ static const char *global_compatible[] = {
 	"spacemit,pm853",
 	"spacemit,spm8821",
 	"spacemit,sy8810l",
+	"ky,pm853",
+	"ky,spm8821",
+	"ky,sy8810l",
 };
 
 void __regulator_desc_find(const char *name, const struct pm8xx_buck_desc **buck_desc,

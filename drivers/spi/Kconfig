@@ -168,6 +168,18 @@ config K1X_SPI
 	help
 	  Enable the Spacemit K1X SPI driver.
 
+config X1_QSPI
+	tristate "Ky X1 QuadSPI driver"
+	depends on SPI_MEM
+	help
+	  Enable the Ky X1 Quad-SPI (QSPI) driver.
+	  This driver support spi flash single, quad and memory reads.
+
+config X1_SPI
+	bool "Ky X1 SPI driver"
+	help
+	  Enable the Ky X1 SPI driver.
+
 config DESIGNWARE_SPI
 	bool "Designware SPI driver"
 	help

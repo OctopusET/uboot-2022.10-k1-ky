@@ -45,3 +45,5 @@ obj-$(CONFIG_WDT_TANGIER) += tangier_wdt.o
 obj-$(CONFIG_WDT_XILINX) += xilinx_wwdt.o
 obj-$(CONFIG_WDT_SPACEMIT) += spacemit_wdt.o
 obj-$(CONFIG_WDT_PMIC_SPACEMIT) += spacemit_pmic_wdt.o
+obj-$(CONFIG_WDT_KY) += ky_wdt.o
+obj-$(CONFIG_WDT_PMIC_KY) += ky_pmic_wdt.o

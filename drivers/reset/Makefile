@@ -33,3 +33,5 @@ obj-$(CONFIG_RESET_ZYNQMP) += reset-zynqmp.o
 obj-$(CONFIG_RESET_DRA7) += reset-dra7.o
 obj-$(CONFIG_RESET_SPACEMIT_K1PRO) += reset-spacemit-k1pro.o
 obj-$(CONFIG_RESET_SPACEMIT_K1X) += reset-spacemit-k1x.o
+obj-$(CONFIG_RESET_KY_K1PRO) += reset-ky-k1pro.o
+obj-$(CONFIG_RESET_KY_X1) += reset-ky-x1.o

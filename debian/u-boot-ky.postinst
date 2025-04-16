@@ -1,0 +1,102 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+configure)
+    target=""
+    if grep -q '^ky' /sys/firmware/devicetree/base/model || grep -q '^ky' /sys/devices/soc0/family; then
+        target="ky"
+    else
+        echo "Neither /sys/firmware/devicetree/base/model nor /sys/devices/soc0/family starts with 'ky'."
+        echo "This may indicate that you are installing this package in a chroot environment."
+        exit 0
+    fi
+
+    for x in $(cat /proc/cmdline); do
+        case $x in
+        root=*)
+            ROOT=${x#root=}
+            ;;
+        esac
+    done
+
+    if [ -n $ROOT ]; then
+        case $ROOT in
+        "/dev/mmcblk0"*)
+            BOOTINFO_FILE=bootinfo_sd.bin
+            BOOTINFO=/dev/mmcblk0
+            FSBL=/dev/mmcblk0p1
+            FSBL_SEEK=0
+            ENV=/dev/mmcblk0p2
+            ENV_SEEK=0
+            UBOOT=/dev/mmcblk0p4
+            UBOOT_SEEK=0
+            ;;
+        "/dev/mmcblk2"*)
+            BOOTINFO_FILE=bootinfo_emmc.bin
+            BOOTINFO=/dev/mmcblk2boot0
+            FSBL=/dev/mmcblk2boot0
+            FSBL_SEEK=512
+            ENV=/dev/mmcblk2p2
+            ENV_SEEK=0
+            UBOOT=/dev/mmcblk2p4
+            UBOOT_SEEK=0
+            if [ -e $BOOTINFO ]; then
+                echo 0 | tee /sys/block/mmcblk2boot0/force_ro
+            fi
+            ;;
+        "/dev/nvme0n1"*)
+            if [ ! -e "/dev/mtdblock5" ]; then
+                BOOTINFO_FILE=bootinfo_spinor.bin
+                BOOTINFO=/dev/mtdblock0
+                FSBL=/dev/mtdblock0
+                FSBL_SEEK=$((128 * 1024))
+                ENV=/dev/mtdblock0
+                ENV_SEEK=$((384 * 1024))
+                UBOOT=/dev/mtdblock0
+                # 以KB为单位
+                UBOOT_SEEK=640
+            else
+                BOOTINFO_FILE=bootinfo_spinor.bin
+                BOOTINFO=/dev/mtdblock0
+                FSBL=/dev/mtdblock2
+                FSBL_SEEK=0
+                ENV=/dev/mtdblock3
+                ENV_SEEK=0
+                UBOOT=/dev/mtdblock5
+                # 以KB为单位
+                UBOOT_SEEK=0
+            fi
+            ;;
+        *)
+            echo "Unsupported root=$ROOT"
+            exit 1
+            ;;
+        esac
+    else
+        echo "Missing root= in cmdline"
+        exit 1
+    fi
+
+    BIN_DIR="/usr/lib/u-boot/$target"
+    # 待检查文件/分区列表
+    files="${BIN_DIR}/${BOOTINFO_FILE} ${BIN_DIR}/FSBL.bin ${BIN_DIR}/env.bin ${BIN_DIR}/u-boot.itb $BOOTINFO $FSBL $ENV $UBOOT"
+    for file in $files; do
+        if [ ! -e "$file" ]; then
+            # 任意不存在则退出
+            echo "Missing $file"
+            exit 1
+        fi
+    done
+
+    # 此前已经做了所有检查
+    set -x
+    dd if=/usr/lib/u-boot/$target/$BOOTINFO_FILE of=$BOOTINFO && sync
+    dd if=/usr/lib/u-boot/$target/FSBL.bin of=$FSBL seek=$FSBL_SEEK bs=1 && sync
+    dd if=/usr/lib/u-boot/$target/env.bin of=$ENV seek=$ENV_SEEK bs=1 && sync
+    dd if=/usr/lib/u-boot/$target/u-boot.itb of=$UBOOT seek=$UBOOT_SEEK bs=1K && sync
+    set +x
+    ;;
+esac
+
+exit 0

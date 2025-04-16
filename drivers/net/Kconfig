@@ -233,6 +233,14 @@ config DWC_ETH_QOS_SPACEMIT
 	  The Synopsys Designware Ethernet QOS IP block with specific
 	  configuration used in Spacemit's k1pro chip.
 
+config DWC_ETH_QOS_KY
+	bool "Synopsys DWC Ethernet QOS device support for Ky"
+	depends on DWC_ETH_QOS
+	default y if CONFIG_TARGET_KY_K1PRO
+	help
+	  The Synopsys Designware Ethernet QOS IP block with specific
+	  configuration used in Ky's k1pro chip.
+
 config E1000
 	bool "Intel PRO/1000 Gigabit Ethernet support"
 	depends on PCI
@@ -658,6 +666,7 @@ config SH_ETHER
 
 source "drivers/net/ti/Kconfig"
 source "drivers/net/spacemit/Kconfig"
+source "drivers/net/ky/Kconfig"
 
 config TULIP
 	bool "DEC Tulip DC2114x Ethernet support"

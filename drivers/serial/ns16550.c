@@ -219,7 +219,7 @@ static void ns16550_setbrg(struct ns16550 *com_port, int baud_divisor)
 	int lcr_val = serial_in(&com_port->lcr) & ~UART_LCR_BKSE;
 
 	serial_out(UART_LCR_BKSE | lcr_val, &com_port->lcr);
-#ifdef CONFIG_TARGET_SPACEMIT_K1X
+#if defined(CONFIG_TARGET_SPACEMIT_K1X) || defined(CONFIG_TARGET_KY_X1)
 	/*
 	 * the right DLL/DLH setting sequence is:
 	 * write DLH --> read DLH --> write DLL
@@ -356,7 +356,7 @@ static inline void _debug_uart_init(void)
 
 	serial_dout(&com_port->lcr, UART_LCR_BKSE | UART_LCRVAL);
 
-#ifdef CONFIG_TARGET_SPACEMIT_K1X
+#if defined(CONFIG_TARGET_SPACEMIT_K1X) || defined(CONFIG_TARGET_KY_X1)
 	/*
 	 * the right DLL/DLH setting sequence is:
 	 * write DLH --> read DLH --> write DLL

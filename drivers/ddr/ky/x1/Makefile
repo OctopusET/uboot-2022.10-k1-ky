@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: GPL-2.0
+#
+# Copyright (C) 2023 Ky
+#
+
+ifdef CONFIG_SPL_BUILD
+obj-y += ddr_init.o lpddr4_silicon_init.o ddr_freq.o
+obj-$(CONFIG_DDR_QOS) += ddr_qos.o
+else
+obj-$(CONFIG_DYNAMIC_DDR_CLK_FREQ) += ddr_freq.o
+endif

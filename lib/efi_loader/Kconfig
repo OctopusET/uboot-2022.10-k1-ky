@@ -130,6 +130,15 @@ config EFI_SET_TIME
 	  Provide the SetTime() runtime service at boottime. This service
 	  can be used by an EFI application to adjust the real time clock.
 
+config EFI_NET
+	bool "Support net service during EFI boot"
+	depends on NET
+	default n
+	help
+	  Provide ethernet service at boottime. It will try to
+	  establish ethernet connection when this option is enabled,
+	  it will raise boot time when NO network cable plugged in.
+
 config EFI_HAVE_CAPSULE_SUPPORT
 	bool
 

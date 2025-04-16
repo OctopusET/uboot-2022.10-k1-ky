@@ -895,7 +895,7 @@ int pci_bind_bus_devices(struct udevice *bus)
 		pci_bus_read_config(bus, bdf, PCI_CLASS_REVISION, &class,
 				    PCI_SIZE_32);
 
-#if defined(CONFIG_TARGET_SPACEMIT_K1X)
+#if defined(CONFIG_TARGET_SPACEMIT_K1X) || defined(CONFIG_TARGET_KY_X1)
 		if(vendor == 0x144d && device == 0xa808) {
 			debug("delay 2s for device 144d:a808\n");
 			mdelay(2000);

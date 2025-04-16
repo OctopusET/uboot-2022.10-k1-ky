@@ -4,6 +4,7 @@ obj-y += fb_common.o
 obj-y += fb_getvar.o
 obj-y += fb_command.o
 obj-y += fb_spacemit.o
+obj-y += fb_ky.o
 obj-$(CONFIG_$(SPL_)FASTBOOT_FLASH_MMC) += fb_mmc.o
 obj-$(CONFIG_$(SPL_)FASTBOOT_FLASH_NAND) += fb_nand.o
 obj-$(CONFIG_$(SPL_)FASTBOOT_FLASH_MTD) += fb_mtd.o

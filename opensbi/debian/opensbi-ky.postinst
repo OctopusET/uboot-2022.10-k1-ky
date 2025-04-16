@@ -1,0 +1,71 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+configure)
+    target=""
+    if grep -q '^ky' /sys/firmware/devicetree/base/model || grep -q '^ky' /sys/devices/soc0/family; then
+        target="ky"
+    else
+        echo "Neither /sys/firmware/devicetree/base/model nor /sys/devices/soc0/family starts with 'ky'."
+        echo "This may indicate that you are installing this package in a chroot environment."
+        exit 0
+    fi
+
+    for x in $(cat /proc/cmdline); do
+        case $x in
+        root=*)
+            ROOT=${x#root=}
+            ;;
+        esac
+    done
+
+    if [ -n $ROOT ]; then
+        case $ROOT in
+        "/dev/mmcblk0"*)
+            OPENSBI=/dev/mmcblk0p3
+            OPENSBI_SEEK=0
+            ;;
+        "/dev/mmcblk2"*)
+            OPENSBI=/dev/mmcblk2p3
+            OPENSBI_SEEK=0
+            ;;
+        "/dev/nvme0n1"*)
+            if [ ! -e "/dev/mtdblock4" ]; then
+                OPENSBI=/dev/mtdblock0
+                # 以KB为单位
+                OPENSBI_SEEK=448
+            else
+                OPENSBI=/dev/mtdblock4
+                # 以KB为单位
+                OPENSBI_SEEK=0
+            fi
+            ;;
+        *)
+            echo "Unsupported root=$ROOT"
+            exit 1
+            ;;
+        esac
+    else
+        echo "Missing root= in cmdline"
+        exit 1
+    fi
+
+    # 待检查文件/分区列表
+    files="/usr/lib/riscv64-linux-gnu/opensbi/generic/fw_dynamic.itb $OPENSBI"
+    for file in $files; do
+        if [ ! -e "$file" ]; then
+            # 任意不存在则退出
+            echo "Missing $file"
+            exit 1
+        fi
+    done
+
+    # 此前已经做了所有检查
+    set -x
+    dd if=/usr/lib/riscv64-linux-gnu/opensbi/generic/fw_dynamic.itb of=$OPENSBI seek=$OPENSBI_SEEK bs=1K && sync
+    set +x
+    ;;
+esac
+
+exit 0

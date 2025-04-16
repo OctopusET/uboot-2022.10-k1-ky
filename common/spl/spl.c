@@ -689,7 +689,7 @@ static int boot_from_devices(struct spl_image_info *spl_image,
 			{
 				pr_debug("Trying to boot from %s\n",
 				       spl_loader_name(loader));
-#if IS_ENABLED(CONFIG_TARGET_SPACEMIT_K1X)
+#if IS_ENABLED(CONFIG_TARGET_SPACEMIT_K1X) || IS_ENABLED(CONFIG_TARGET_KY_X1)
 				if (!strncmp("RAM", spl_loader_name(loader), 3)){
 					asm("ebreak");
 				}

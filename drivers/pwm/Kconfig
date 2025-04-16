@@ -116,7 +116,7 @@ config PWM_PXA
 	bool "Enable support for PXA PWM"
 	depends on DM_PWM
 	help
-	  This PWM is found on Spacemit-K1x and other SoCs.
+	  This PWM is found on Ky-K1x (Spacemit-K1x) and other SoCs.
 
 config PWM_TI_EHRPWM
 	bool "Enable support for EHRPWM PWM"

@@ -71,7 +71,7 @@ int overwrite_console(void)
 
 /* Device name */
 #define DEVNAME			"usbkbd"
-unsigned int usbkbd_count = 0;
+static unsigned int usbkbd_count;
 bool usb_kbd_only; /* flag for only scanning keyboard devices */
 
 /* Keyboard maps */

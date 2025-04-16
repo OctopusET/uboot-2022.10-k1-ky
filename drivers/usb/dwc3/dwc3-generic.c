@@ -223,7 +223,8 @@ static int dwc3_generic_host_probe(struct udevice *dev)
 		return rc;
 
 #if CONFIG_IS_ENABLED(K1_X_BOARD_ASIC)
-	if (device_is_compatible(dev->parent, "spacemit,k1-x-dwc3")) {
+	if (device_is_compatible(dev->parent, "spacemit,k1-x-dwc3") ||
+	device_is_compatible(dev->parent, "ky,x1-dwc3")) {
 		rc = device_get_supply_regulator(dev->parent, "vbus-supply",
 						&priv->vbus_supply);
 		if (rc && rc != -ENOENT) {
@@ -248,7 +249,8 @@ static int dwc3_generic_host_remove(struct udevice *dev)
 	int rc;
 
 #if CONFIG_IS_ENABLED(K1_X_BOARD_ASIC)
-	if (device_is_compatible(dev->parent, "spacemit,k1-x-dwc3") && priv->vbus_supply) {
+	if ((device_is_compatible(dev->parent, "spacemit,k1-x-dwc3") && priv->vbus_supply) ||
+	(device_is_compatible(dev->parent, "ky,x1-dwc3") && priv->vbus_supply)) {
 		regulator_set_enable(priv->vbus_supply, false);
 	}
 #endif
@@ -594,6 +596,8 @@ static const struct udevice_id dwc3_glue_ids[] = {
 	{ .compatible = "intel,tangier-dwc3" },
 	{ .compatible = "spacemit,k1-pro-dwc3" },
 	{ .compatible = "spacemit,k1-x-dwc3" },
+	{ .compatible = "ky,k1-pro-dwc3" },
+	{ .compatible = "ky,x1-dwc3" },
 	{ }
 };
 

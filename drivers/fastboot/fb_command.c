@@ -16,6 +16,7 @@
 #include <spl.h>
 #include <image.h>
 #include <fb_spacemit.h>
+#include <fb_ky.h>
 #include <fb_mtd.h>
 #include <fb_blk.h>
 #include <dm.h>

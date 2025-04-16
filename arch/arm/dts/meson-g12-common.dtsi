@@ -629,7 +629,7 @@
 						};
 					};
 
-					mclk1_x_pins: mclk1-x {
+					mclk1_x_pins: mclx1 {
 						mux {
 							groups = "mclk1_x";
 							function = "mclk1";

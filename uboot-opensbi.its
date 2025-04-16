@@ -1,0 +1,46 @@
+/dts-v1/;
+
+/ {
+        description = "U-boot FIT image for x1";
+        #address-cells = <2>;
+        fit,fdt-list = "of-list";
+
+        images {
+                uboot {
+                        description = "U-Boot";
+                        type = "standalone";
+                        os = "U-Boot";
+                        arch = "riscv";
+                        compression = "none";
+                        load = <0x0 0x00200000>;
+                        data = /incbin/("./u-boot-nodtb.bin");
+                };
+
+                opensbi {
+                        description = "OpenSBI fw_dynamic Firmware";
+                        type = "firmware";
+                        os = "opensbi";
+                        arch = "riscv";
+                        compression = "none";
+                        load = <0x0 0x0>;
+                        entry = <0x0 0x0>;
+                        data = /incbin/("./fw_dynamic.bin");
+                };
+                fdt_14 {
+                        description = "x1_orangepi-rv2";
+                        type = "flat_dt";
+                        compression = "none";
+                        data = /incbin/("./x1_orangepi-rv2.dtb");
+                };
+        };
+
+        configurations {
+                default = "conf_14";
+                conf_14 {
+                        description = "x1_orangepi-rv2";
+                        firmware = "opensbi";
+                        loadables = "uboot";
+                        fdt = "fdt_14";
+                };
+        };
+};

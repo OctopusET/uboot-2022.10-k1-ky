@@ -1,0 +1,23 @@
+config PHY_KY_X1_USB2
+	bool "Ky x1 USB2 PHY Driver"
+	depends on PHY
+	help
+	  Support for Ky x1 USB 2 PHY
+
+config SPL_PHY_KY_X1_USB2
+	bool "Ky x1 USB2 PHY Driver in SPL"
+	depends on PHY
+	help
+	  Support for Ky x1 USB 2 PHY
+
+config PHY_KY_X1_COMBPHY
+	tristate "Ky K1-x USB3&PCIE combo PHY driver"
+	depends on PHY
+	help
+	  USB3 and PCIE Combo PHY Support for Ky x1 Soc
+
+config SPL_PHY_KY_X1_COMBPHY
+	tristate "Ky K1-x USB3&PCIE combo PHY driver in SPL"
+	depends on PHY
+	help
+	  USB3 and PCIE Combo PHY Support for Ky x1 Soc

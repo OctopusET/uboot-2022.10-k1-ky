@@ -467,4 +467,12 @@ config SPL_SPACEMIT_POWER
 
          Enable support for power control in SPL for SPM8XX PMICs.
 
+config SPL_KY_POWER
+       bool "Power support in SPL for SPM8XX"
+       depends on SPL
+       help
+         Note: This is a legacy option. Use SPL_DM_PMIC instead.
+
+         Enable support for power control in SPL for SPM8XX PMICs.
+
 endif

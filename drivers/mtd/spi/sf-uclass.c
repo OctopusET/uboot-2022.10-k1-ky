@@ -106,7 +106,7 @@ static int spi_flash_post_bind(struct udevice *dev)
 }
 
 #ifdef CONFIG_SPINOR_BLOCK_SUPPORT
-int spacemit_spinor_post_probe(struct udevice *dev)
+int ky_spinor_post_probe(struct udevice *dev)
 {
 	struct blk_desc *bdesc;
 	struct udevice *bdev;
@@ -142,7 +142,7 @@ UCLASS_DRIVER(spi_flash) = {
 	.name		= "spi_flash",
 	.post_bind	= spi_flash_post_bind,
 #ifdef CONFIG_SPINOR_BLOCK_SUPPORT
-	.post_probe	= spacemit_spinor_post_probe,
+	.post_probe	= ky_spinor_post_probe,
 #endif /* CONFIG_SPINOR_BLOCK_SUPPORT */
 	.per_device_auto	= sizeof(struct spi_nor),
 };

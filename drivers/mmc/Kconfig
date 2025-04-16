@@ -762,6 +762,20 @@ config MMC_SDHCI_K1X
 	help
 	  Support for Spacemit K1x SDHCI host controller on RISCV SoCs platform
 
+config MMC_SDHCI_KY
+	bool "SDHCI support for Ky controller"
+	depends on DM_MMC && OF_CONTROL && BLK
+	depends on MMC_SDHCI
+	help
+	  Support for Ky SDHCI host controller on RISCV SoCs platform
+
+config MMC_SDHCI_X1
+	bool "SDHCI support for the X1 SD/MMC Controller"
+	depends on DM_MMC && BLK
+	depends on MMC_SDHCI
+	help
+	  Support for Ky K1x SDHCI host controller on RISCV SoCs platform
+
 config MMC_SUNXI
 	bool "Allwinner sunxi SD/MMC Host Controller support"
 	depends on ARCH_SUNXI

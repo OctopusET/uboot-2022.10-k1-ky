@@ -17,7 +17,7 @@
 #include <linux/delay.h>
 #include <linux/string.h>
 
-#ifdef CONFIG_VIDEO_SPACEMIT
+#if defined(CONFIG_VIDEO_SPACEMIT) || defined(CONFIG_VIDEO_KY)
 extern bool is_video_connected;
 #endif
 
@@ -604,7 +604,7 @@ int menu_show(int bootdelay)
 		return 0;
 #endif
 
-#ifdef CONFIG_VIDEO_SPACEMIT
+#if defined(CONFIG_VIDEO_SPACEMIT) || defined(CONFIG_VIDEO_KY)
 	printf("menu_show:is_video_connected: %d\n", is_video_connected);
 	if (is_video_connected) {
 		env_set("stdout", "serial,vidconsole");

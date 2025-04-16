@@ -1,0 +1,41 @@
+/dts-v1/;
+
+/ {
+	description = "U-boot FIT image for x1";
+	#address-cells = <2>;
+	fit,fdt-list = "of-list";
+
+	images {
+		uboot {
+			description = "U-Boot";
+			type = "standalone";
+			os = "U-Boot";
+			arch = "riscv";
+			compression = "none";
+			load = <0x0 0x00200000>;
+			data = /incbin/("../u-boot-nodtb.bin");
+			hash-1 {
+				algo = "crc32";
+			};
+		};
+
+		fdt_1 {
+			description = "x1_orangepi-rv2";
+			type = "flat_dt";
+			compression = "none";
+			data = /incbin/("../dtb/x1_orangepi-rv2.dtb");
+			hash-1 {
+				algo = "crc32";
+			};
+		};
+	};
+
+	configurations {
+		default = "conf_2";
+		conf_1 {
+			description = "x1_orangepi-rv2";
+			loadables = "uboot";
+			fdt = "fdt_1";
+		};
+	};
+};

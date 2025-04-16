@@ -156,7 +156,7 @@ config SYS_HZ
 
 config PRINT_TIMESTAMP
 	bool "Show timing information on printf"
-	depends on TARGET_SPACEMIT_K1X
+	depends on TARGET_SPACEMIT_K1X || TARGET_KY_X1
 	help
 	  Selecting this option causes time stamps of the printf()
 	  messages to be added to the output at the console.

@@ -19,3 +19,4 @@ obj-$(CONFIG_TI_SCI_POWER_DOMAIN) += ti-sci-power-domain.o
 obj-$(CONFIG_TI_POWER_DOMAIN) += ti-power-domain.o
 obj-$(CONFIG_ZYNQMP_POWER_DOMAIN) += zynqmp-power-domain.o
 obj-$(CONFIG_K1X_POWER_DOMAIN) += k1x-power-domain.o 
+obj-$(CONFIG_X1_POWER_DOMAIN) += x1-power-domain.o 

@@ -4,6 +4,8 @@
  * Lukas Auer <lukas.auer@aisec.fraunhofer.de>
  *
  * Based on common/spl/spl_atf.c
+ * FIXME K1X_* macros are just same as X1_* macros so most of logics are gone
+ * K1X and X1 should be merged into X60 someday
  */
 #include <common.h>
 #include <cpu_func.h>
@@ -52,8 +54,8 @@ void _wakeup_non_ai_core(struct spl_image_info *spl_image)
 	unsigned int val;
 	unsigned long start, end, size = 2048;
 
-	if (readl((unsigned int *)K1X_PMU_CORE_STATUS_REGISTER) &
-			(1 << K1X_NON_AI_CORE4_C2_STATUS_BIT)) {
+	if (readl((unsigned int *)X1_PMU_CORE_STATUS_REGISTER) &
+			(1 << X1_NON_AI_CORE4_C2_STATUS_BIT)) {
 
 		/* flush the cache of spl_image */
 		start = (unsigned long)spl_image;
@@ -97,7 +99,7 @@ void _wakeup_non_ai_core(struct spl_image_info *spl_image)
 		writel((u64)spl_image, (void __iomem *)CLUSTER0_RVBADDR_LO_ADDR);
 
 		/* wakeup core 4 */
-		writel(1 << K1X_LUANCH_AI_CORE_NUMBER, (void __iomem *)CLUSTER0_CPU_RESET_REGISTER);
+		writel(1 << X1_LUANCH_AI_CORE_NUMBER, (void __iomem *)CLUSTER0_CPU_RESET_REGISTER);
 
 		/* assert core0 */
 		val = readl((void __iomem *)PMU_CAP_CORE0_IDLE_CFG);
@@ -114,12 +116,12 @@ void _non_ai_entry(struct spl_image_info *spl_image)
 {
 	void (*opensbi_entry)(ulong hartid, ulong dtb, ulong info);
 
-	opensbi_info.boot_hart = /* gd->arch.boot_hart */ K1X_LUANCH_AI_CORE_NUMBER;
+	opensbi_info.boot_hart = /* gd->arch.boot_hart */ X1_LUANCH_AI_CORE_NUMBER;
 
 	/* core4 enter opensbi */
 	opensbi_entry = (void (*)(ulong, ulong, ulong))spl_image->entry_point;
 
-	opensbi_entry(/* gd->arch.boot_hart */ K1X_LUANCH_AI_CORE_NUMBER,
+	opensbi_entry(/* gd->arch.boot_hart */ X1_LUANCH_AI_CORE_NUMBER,
 			(ulong)spl_image->fdt_addr,
 		      (ulong)&opensbi_info);
 }

@@ -247,6 +247,14 @@ config USB_EHCI_K1X
 	help
 	  Enable support for Spacemit k1x SoC's on-chip EHCI controller.
 
+config USB_EHCI_X1
+	bool "EHCI support for Ky x1 USB controller"
+	select USB_EHCI_IS_TDI
+	select PHY
+	select PHY_KY_X1_USB2
+	help
+	  Enable support for Ky x1 SoC's on-chip EHCI controller.
+
 if USB_EHCI_MX6 || USB_EHCI_MX7
 
 config MXC_USB_OTG_HACTIVE

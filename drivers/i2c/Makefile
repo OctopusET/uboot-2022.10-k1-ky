@@ -11,6 +11,7 @@ obj-$(CONFIG_$(SPL_)I2C_CROS_EC_TUNNEL) += cros_ec_tunnel.o
 obj-$(CONFIG_$(SPL_)I2C_CROS_EC_LDO) += cros_ec_ldo.o
 
 obj-$(CONFIG_$(SPL_)SYS_I2C_SPACEMIT) += spacemit_i2c.o
+obj-$(CONFIG_$(SPL_)SYS_I2C_KY) += ky_i2c.o
 obj-$(CONFIG_$(SPL_)SYS_I2C_LEGACY) += i2c_core.o
 obj-$(CONFIG_SYS_I2C_ASPEED) += ast_i2c.o
 obj-$(CONFIG_SYS_I2C_AT91) += at91_i2c.o

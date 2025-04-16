@@ -27,6 +27,7 @@ obj-${CONFIG_VIDEO_ROCKCHIP} += rockchip/
 obj-${CONFIG_VIDEO_STM32} += stm32/
 obj-${CONFIG_VIDEO_TEGRA124} += tegra124/
 obj-${CONFIG_VIDEO_SPACEMIT} += spacemit/
+obj-${CONFIG_VIDEO_KY} += ky/
 obj-y += ti/
 
 obj-$(CONFIG_ATMEL_HLCD) += atmel_hlcdfb.o

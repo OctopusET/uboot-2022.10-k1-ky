@@ -100,6 +100,17 @@ config WDT_SPACEMIT
 
 config WDT_PMIC_SPACEMIT
 	bool "SPACEMIT pmic watchdog timer support"
+	
+config WDT_KY
+	bool "KY watchdog timer support"
+	depends on WDT
+	help
+	  Enable support for the watchdog timer on KY SoCs.
+	  The watchdog will perform a full SoC reset resulting in a
+	  reboot of the entire system.
+
+config WDT_PMIC_KY
+	bool "KY pmic watchdog timer support"
 	depends on WDT
 	help
 	  Enable support for the watchdog timer on pmic SoC.

@@ -155,6 +155,12 @@ config USB2_K1X_CI
 	help
 	    K1x's usb controller is an integrated high speed USB 2.0 controller.
 
+config USB2_X1_CI
+	bool "Enable Ky K1x USB2.0 Controller"
+	select USB_GADGET_DUALSPEED
+	help
+	    K1x's usb controller is an integrated high speed USB 2.0 controller.
+
 # Selected by UDC drivers that support high-speed operation.
 config USB_GADGET_DUALSPEED
 	bool

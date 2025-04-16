@@ -1,0 +1,10 @@
+config PINCTRL_KY
+	bool
+
+config PINCTRL_K1PRO
+	bool "Ky K1PRO pinctrl driver"
+	depends on TARGET_KY_K1PRO && PINCTRL_FULL
+	select DEVRES
+	select PINCTRL_KY
+	help
+	  Say Y here to enable the k1-pro pinctrl driver

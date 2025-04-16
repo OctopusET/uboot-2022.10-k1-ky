@@ -1039,7 +1039,7 @@ static void dwc2_set_stm32mp1_hsotg_params(struct dwc2_plat_otg_data *p)
 		p->usb_gusbcfg |= 1 << 30; /* FDMOD: Force device mode */
 }
 
-static void dwc2_set_spacemit_hsotg_params(struct dwc2_plat_otg_data *p)
+static void dwc2_set_ky_hsotg_params(struct dwc2_plat_otg_data *p)
 {
 	p->activate_stm_id_vb_detection = true;
 	p->usb_gusbcfg =
@@ -1194,7 +1194,9 @@ static int dwc2_udc_otg_remove(struct udevice *dev)
 static const struct udevice_id dwc2_udc_otg_ids[] = {
 	{ .compatible = "snps,dwc2" },
 	{ .compatible = "spacemit,k1-pro-usb",
-	  .data = (ulong)dwc2_set_spacemit_hsotg_params },
+	  .data = (ulong)dwc2_set_ky_hsotg_params },
+	{ .compatible = "ky,k1-pro-usb",
+	  .data = (ulong)dwc2_set_ky_hsotg_params },
 	{ .compatible = "brcm,bcm2835-usb" },
 	{ .compatible = "st,stm32mp15-hsotg",
 	  .data = (ulong)dwc2_set_stm32mp1_hsotg_params },

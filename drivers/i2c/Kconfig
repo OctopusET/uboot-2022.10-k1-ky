@@ -99,6 +99,18 @@ config SPL_SYS_I2C_SPACEMIT
         help
           Support for SPACEMIT I2C controllers in SPL.
 
+config SYS_I2C_KY
+        bool "KY I2C driver"
+        depends on DM_I2C
+        help
+          Support for KY I2C controllers.
+
+config SPL_SYS_I2C_KY
+        bool "KY I2C SPL driver"
+        depends on SPL_SYS_I2C_LEGACY
+        help
+          Support for KY I2C controllers in SPL.
+
 config I2C_CROS_EC_TUNNEL
 	tristate "Chrome OS EC tunnel I2C bus"
 	depends on CROS_EC

@@ -1,0 +1,5 @@
+u-boot.itb usr/lib/u-boot/ky
+FSBL.bin usr/lib/u-boot/ky
+bootinfo*.bin usr/lib/u-boot/ky
+env.bin usr/lib/u-boot/ky
+tools/logos/bianbu.bmp boot

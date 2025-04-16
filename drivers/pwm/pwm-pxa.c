@@ -112,7 +112,7 @@ static int pxa_pwm_probe(struct udevice *dev)
 	struct pxa_pwm_priv *priv = dev_get_priv(dev);
 	int ret = 0;
 
-	priv->dcr_fd = dev_read_u32_default(dev, "k1x,pwm-disable-fd", 0);
+	priv->dcr_fd = dev_read_u32_default(dev, "x1,pwm-disable-fd", 0);
 
 	ret = clk_get_by_index(dev,0,&priv->clk);
 	if(ret)
@@ -141,11 +141,11 @@ err_rst:
 }
 
 static const struct udevice_id pxa_pwm_ids[] = {
-	{ .compatible = "spacemit,k1x-pwm", .data = 0 },
+	{ .compatible = "ky,x1-pwm", .data = 0 },
 	{ }
 };
 
-U_BOOT_DRIVER(spacemit_pwm) = {
+U_BOOT_DRIVER(ky_pwm) = {
 	.name = "pxa_pwm",
 	.id = UCLASS_PWM,
 	.of_match = pxa_pwm_ids,
